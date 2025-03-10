@@ -1,0 +1,383 @@
+:root {
+    --primary: #ff85a2;
+    --secondary: #ffb6c1;
+    --background: #fff0f5;
+    --text: #4a4a4a;
+    --card-bg: #ffffff;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --radius: 15px;
+}
+
+[data-theme="dark"] {
+    --primary: #ff6b6b;
+    --secondary: #ff8787;
+    --background: #2d2d2d;
+    --text: #ffffff;
+    --card-bg: #383838;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    transition: all 0.3s ease;
+}
+
+body {
+    padding: 20px;
+    background-color: var(--background);
+    color: var(--text);
+    font-family: 'Comic Neue', cursive;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    position: relative;
+}
+
+.header h1 {
+    color: var(--primary);
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+}
+
+.theme-switch {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.theme-switch button {
+    padding: 8px 12px;
+    font-size: 14px;
+    width: auto;
+    border-radius: 20px;
+    min-width: 70px;
+}
+
+.card {
+    background-color: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: var(--shadow);
+}
+
+.dashboard { 
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    align-items: stretch;
+    margin-bottom: 25px;
+}
+
+.balance-card {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
+.balance-amount {
+    font-size: 3em;
+    font-weight: bold;
+    color: var(--primary);
+    margin: 20px 0;
+    text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+}
+
+.summary {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.summary-item {
+    padding: 15px;
+    border-radius: calc(var(--radius) - 5px);
+    width: 100%;
+    text-align: center;
+    font-weight: bold;
+}
+
+.summary-item.income {
+    background-color: rgba(46, 204, 113, 0.1);
+    color: #2ecc71;
+    margin-bottom: 10px;
+}
+
+.summary-item.expense {
+    background-color: rgba(231, 76, 60, 0.1);
+    color: #e74c3c;
+}
+
+.chart-card {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.chart-card canvas {
+    max-height: 300px;
+    margin: 15px 0;
+
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+input, select, button {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--secondary);
+    border-radius: 8px;
+    background-color: var(--card-bg);
+    color: var(--text);
+    font-size: 16px;
+}
+
+button {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 12px 20px;
+    margin: 5px;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+    filter: brightness(1.1);
+}
+
+.transaction-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    background-color: var(--card-bg);
+    box-shadow: var(--shadow);
+}
+
+.transaction-item:hover {
+    transform: translateX(5px);
+}
+
+.tools-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.category-tag {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.8em;
+    background-color: var(--secondary);
+    color: white;
+}
+
+.auth-card {
+    max-width: 400px;
+    margin: 20px auto;
+    display: none;
+}
+
+.auth-card.active {
+    display: block;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.auth-form input {
+    padding: 12px;
+    border: 2px solid var(--secondary);
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.auth-error {
+    color: #e74c3c;
+    text-align: center;
+    font-size: 0.9em;
+}
+
+.logout-btn {
+    background-color: #e74c3c !important;
+    margin-left: 10px;
+}
+
+/* Loading State */
+.loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.loading.active {
+    display: flex;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+/* Tambahkan media query untuk mobile */
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+
+    .header h1 {
+        font-size: 1.8em;
+        margin-top: 40px;
+    }
+
+    .theme-switch {
+        top: 15px;
+        right: 15px;
+    }
+
+    .theme-switch button {
+        padding: 6px 10px;
+        font-size: 12px;
+        min-width: 60px;
+    }
+
+    .dashboard {
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .balance-amount {
+        font-size: 2em;
+        margin: 10px 0;
+    }
+
+    .chart-card canvas {
+        max-height: 200px;
+    }
+
+    .form-grid {
+        gap: 10px;
+    }
+
+    input, select, button {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .transaction-item {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 12px;
+        gap: 8px;
+    }
+
+    .transaction-item > div {
+        width: 100%;
+        text-align: left;
+    }
+
+    .tools-card .filter-group {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .filter-group input {
+        width: 100%;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .form-actions button {
+        width: 100%;
+        margin: 3px 0;
+    }
+
+    .summary-item {
+        padding: 12px;
+        font-size: 0.9em;
+    }
+}
+
+/* Perbaikan tambahan untuk tablet kecil */
+@media (max-width: 768px) {
+    .card {
+        padding: 15px;
+    }
+
+    .header {
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    .balance-card,
+    .chart-card {
+        padding: 15px;
+    }
+
+    .balance-amount {
+        font-size: 2.2em;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .tools-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+}
