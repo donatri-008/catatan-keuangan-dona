@@ -216,24 +216,28 @@ async function setupRealTimeListener() {
             .collection('transactions')
             .orderBy('date', 'desc')
             .onSnapshot(snapshot => {
-                console.log("Received snapshot:", snapshot.docs);
-                if (!snapshot.empty) {
-                    transactions = snapshot.docs.map(doc => ({
-                        id: doc.id,
-                        ...doc.data(),
-                        date: doc.data().date.toDate()
-                    }));
-                    console.log("Transaksi berhasil dimuat:", transactions);
+                if (!snapshot.metadata.hasPendingWrites) {
+                    transactions = snapshot.docs.map(doc => {
+                        const data = doc.data();
+                        return {
+                            id: doc.id,
+                            name: data.name,
+                            amount: data.amount,
+                            date: data.date?.toDate() || new Date(),
+                            category: data.category,
+                            type: data.type
+                        };
+                    });
+                    console.log('Data transaksi terupdate:', transactions);
                     updateAll();
-                } else {
-                    console.warn("Tidak ada transaksi ditemukan.");
                 }
             }, error => {
-                console.error('Error listening to realtime updates:', error);
-                alert('Gagal memuat data transaksi');
+                console.error('Error listener:', error);
+                showNotification("Gagal memuat data realtime", "error");
             });
     } catch (error) {
-        console.error('Error setting up listener:', error);
+        console.error('Error setup listener:', error);
+        showNotification("Gagal menghubungkan ke database", "error");
     }
 }
 
