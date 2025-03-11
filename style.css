@@ -85,6 +85,12 @@ body {
     display: none !important;
 }
 
+.swal2-confirm {
+    display: inline-block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
 .container {
     max-width: 1200px;
     margin: 0 auto;
