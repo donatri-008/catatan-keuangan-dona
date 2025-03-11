@@ -70,11 +70,11 @@ body {
 }
 
 #appContent {
-    display: none !important;
+    display: none;
 }
 
 #appContent.active {
-    display: block !important;
+    display: block;
 }
 
 .auth-container.active {
