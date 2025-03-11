@@ -199,12 +199,17 @@ async function setupRealTimeListener() {
             .collection('transactions')
             .orderBy('date', 'desc')
             .onSnapshot(snapshot => {
-                transactions = snapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data(),
-                    date: doc.data().date.toDate()
-                }));
-                updateAll();
+                if (!snapshot.empty) {
+                    transactions = snapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data(),
+                        date: doc.data().date.toDate()
+                    }));
+                    console.log("Transaksi berhasil dimuat:", transactions);
+                    updateAll();
+                } else {
+                    console.warn("Tidak ada transaksi ditemukan.");
+                }
             }, error => {
                 console.error('Error listening to realtime updates:', error);
                 alert('Gagal memuat data transaksi');
@@ -307,12 +312,23 @@ function renderTransactions() {
                     ${transaction.type === 'income' ? '+' : '-'}Rp${transaction.amount.toLocaleString('id-ID')}
                 </div>
                 <div style="margin-top: 5px">
-                    <button onclick="editTransaction('${transaction.id}')">✏️ Edit</button>
-                    <button onclick="deleteTransaction('${transaction.id}')">🗑️ Hapus</button>
+                    <button class="edit-btn" data-id="${transaction.id}">✏️ Edit</button>
+                    <button class="delete-btn" data-id="${transaction.id}">🗑️ Hapus</button>
                 </div>
             </div>
         `;
         container.appendChild(div);
+    });
+
+    // Tambahkan event listener untuk tombol Edit dan Hapus dengan event delegation
+    container.addEventListener("click", function(event) {
+        if (event.target.classList.contains("edit-btn")) {
+            const id = event.target.getAttribute("data-id");
+            editTransaction(id);
+        } else if (event.target.classList.contains("delete-btn")) {
+            const id = event.target.getAttribute("data-id");
+            deleteTransaction(id);
+        }
     });
 }
 
@@ -330,6 +346,8 @@ function getCategoryIcon(category) {
 
 function editTransaction(id) {
     const transaction = transactions.find(t => t.id === id);
+    console.log("Transaction to edit:", transaction); // Debugging
+
     if (transaction) {
         currentEditId = id;
         document.getElementById('transactionName').value = transaction.name;
@@ -341,6 +359,9 @@ function editTransaction(id) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
         showNotification("✏️ Edit transaksi siap dilakukan!", "info");
+    } else {
+        console.error("Transaksi tidak ditemukan:", id);
+        showNotification("❌ Transaksi tidak ditemukan!", "error");
     }
 }
 
