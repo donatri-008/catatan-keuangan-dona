@@ -31,12 +31,6 @@ auth.onAuthStateChanged(user => {
     const transactionHistory = document.getElementById('transactionHistory');
 
     loading.style.display = 'flex';
-    
-    // Hentikan listener sebelumnya jika ada
-    if (unsubscribeTransactions) {
-        unsubscribeTransactions();
-        unsubscribeTransactions = null;
-    }
 
     setTimeout(() => {
         if (user) {
@@ -48,13 +42,7 @@ auth.onAuthStateChanged(user => {
             filterSection.style.display = "block";
             transactionHistory.style.display = "block";
 
-            // Setup listener dengan error handling
-            try {
-                setupRealTimeListener();
-            } catch (error) {
-                console.error('Gagal setup listener:', error);
-                showNotification("Gagal memuat data transaksi", "error");
-            }
+            setupRealTimeListener();
         } else {
             // Jika belum login, sembunyikan semua elemen aplikasi
             authContainer.style.display = "block";
@@ -64,11 +52,6 @@ auth.onAuthStateChanged(user => {
             filterSection.style.display = "none";
             transactionHistory.style.display = "none";
 
-            // Reset state aplikasi
-            transactions = [];
-            currentEditId = null;
-            updateAll();
-            
             showAuthUI();
         }
         loading.style.display = 'none';
@@ -216,28 +199,23 @@ async function setupRealTimeListener() {
             .collection('transactions')
             .orderBy('date', 'desc')
             .onSnapshot(snapshot => {
-                if (!snapshot.metadata.hasPendingWrites) {
-                    transactions = snapshot.docs.map(doc => {
-                        const data = doc.data();
-                        return {
-                            id: doc.id,
-                            name: data.name,
-                            amount: data.amount,
-                            date: data.date?.toDate() || new Date(),
-                            category: data.category,
-                            type: data.type
-                        };
-                    });
-                    console.log('Data transaksi terupdate:', transactions);
+                if (!snapshot.empty) {
+                    transactions = snapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data(),
+                        date: doc.data().date.toDate()
+                    }));
+                    console.log("Transaksi berhasil dimuat:", transactions);
                     updateAll();
+                } else {
+                    console.warn("Tidak ada transaksi ditemukan.");
                 }
             }, error => {
-                console.error('Error listener:', error);
-                showNotification("Gagal memuat data realtime", "error");
+                console.error('Error listening to realtime updates:', error);
+                alert('Gagal memuat data transaksi');
             });
     } catch (error) {
-        console.error('Error setup listener:', error);
-        showNotification("Gagal menghubungkan ke database", "error");
+        console.error('Error setting up listener:', error);
     }
 }
 
@@ -276,17 +254,12 @@ async function deleteTransaction(id) {
         cancelButtonText: "Batal"
     }).then((result) => {
         if (result.isConfirmed) {
-            db.collection('users')
-                .doc(auth.currentUser.uid)
-                .collection('transactions')
-                .doc(id)
-                .delete()
-                .then(() => {
-                    showNotification("🗑️ Transaksi berhasil dihapus!", "success");
-                })
-                .catch(error => {
-                    showNotification("Gagal menghapus transaksi: " + error.message, "error");
-                });
+            const index = transactions.findIndex(t => t.id === id);
+            if (index !== -1) {
+                transactions.splice(index, 1);
+                renderTransactions();
+                showNotification("🗑️ Transaksi berhasil dihapus!", "success");
+            }
         }
     });
 }
@@ -321,34 +294,11 @@ function updateChart() {
     financeChart.update();
 }
 
-function getFilteredTransactions() {
-    if (!currentFilter) return transactions;
-    
-    const startDate = new Date(currentFilter.start);
-    startDate.setHours(0, 0, 0, 0);
-    
-    const endDate = new Date(currentFilter.end);
-    endDate.setHours(23, 59, 59, 999);
-
-    return transactions.filter(t => {
-        const transDate = new Date(t.date);
-        return transDate >= startDate && transDate <= endDate;
-    });
-}
-
 function renderTransactions() {
-    console.log('[DEBUG] All transactions:', transactions); 
     const container = document.getElementById('transactions');
     container.innerHTML = '';
 
-    const filtered = getFilteredTransactions();
-
-    if (!transaction.id) {
-        console.error('Transaction missing ID:', transaction);
-        return; // Skip invalid data
-    }
-
-    filtered.forEach(transaction => {
+    transactions.forEach(transaction => {
         const div = document.createElement('div');
         div.className = 'transaction-item';
         div.innerHTML = `
@@ -370,15 +320,13 @@ function renderTransactions() {
         container.appendChild(div);
     });
 
+    // Tambahkan event listener untuk tombol Edit dan Hapus dengan event delegation
     container.addEventListener("click", function(event) {
-        const editBtn = event.target.closest('.edit-btn');
-        const deleteBtn = event.target.closest('.delete-btn');
-        
-        if (editBtn) {
-            const id = editBtn.dataset.id;
+        if (event.target.classList.contains("edit-btn")) {
+            const id = event.target.getAttribute("data-id");
             editTransaction(id);
-        } else if (deleteBtn) {
-            const id = deleteBtn.dataset.id;
+        } else if (event.target.classList.contains("delete-btn")) {
+            const id = event.target.getAttribute("data-id");
             deleteTransaction(id);
         }
     });
@@ -397,11 +345,9 @@ function getCategoryIcon(category) {
 }
 
 function editTransaction(id) {
-    console.log('Mencari transaksi dengan ID:', id);
-    console.log('Daftar transaksi:', transactions);
-    
     const transaction = transactions.find(t => t.id === id);
-    
+    console.log("Transaction to edit:", transaction); // Debugging
+
     if (transaction) {
         currentEditId = id;
         document.getElementById('transactionName').value = transaction.name;
@@ -411,9 +357,11 @@ function editTransaction(id) {
         document.getElementById('transactionType').value = transaction.type;
         document.getElementById('submitButton').textContent = '💾 Simpan Perubahan';
         window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        showNotification("✏️ Edit transaksi siap dilakukan!", "info");
     } else {
-        console.error('Transaksi tidak ditemukan dengan ID:', id);
-        showNotification("Transaksi tidak ditemukan!", "error");
+        console.error("Transaksi tidak ditemukan:", id);
+        showNotification("❌ Transaksi tidak ditemukan!", "error");
     }
 }
 
