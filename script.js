@@ -31,31 +31,48 @@ auth.onAuthStateChanged(user => {
     const transactionHistory = document.getElementById('transactionHistory');
 
     loading.style.display = 'flex';
+    
+    // Hentikan listener sebelumnya jika ada
+    if (unsubscribeTransactions) {
+        unsubscribeTransactions();
+        unsubscribeTransactions = null;
+    }
 
-    setTimeout(() => {
-        if (user) {
-            // Jika sudah login, tampilkan elemen yang diperlukan
-            authContainer.style.display = "none";
-            appContent.style.display = "block";
-            logoutButton.style.display = "inline-block";
-            formSection.style.display = "block";
-            filterSection.style.display = "block";
-            transactionHistory.style.display = "block";
+    // Hapus timeout yang tidak perlu
+    if (user) {
+        // Handle UI untuk user logged in
+        authContainer.style.display = "none";
+        appContent.style.display = "block";
+        logoutButton.style.display = "inline-block";
+        formSection.style.display = "block";
+        filterSection.style.display = "block";
+        transactionHistory.style.display = "block";
 
+        // Setup listener dengan error handling
+        try {
             setupRealTimeListener();
-        } else {
-            // Jika belum login, sembunyikan semua elemen aplikasi
-            authContainer.style.display = "block";
-            appContent.style.display = "none";
-            logoutButton.style.display = "none";
-            formSection.style.display = "none";
-            filterSection.style.display = "none";
-            transactionHistory.style.display = "none";
-
-            showAuthUI();
+        } catch (error) {
+            console.error('Gagal setup listener:', error);
+            showNotification("Gagal memuat data transaksi", "error");
         }
-        loading.style.display = 'none';
-    }, 1000);
+    } else {
+        // Handle UI untuk user logged out
+        authContainer.style.display = "block";
+        appContent.style.display = "none";
+        logoutButton.style.display = "none";
+        formSection.style.display = "none";
+        filterSection.style.display = "none";
+        transactionHistory.style.display = "none";
+
+        // Reset state aplikasi
+        transactions = [];
+        currentEditId = null;
+        updateAll();
+        
+        showAuthUI();
+    }
+    
+    loading.style.display = 'none';
 });
 
 function showAppContent() {
@@ -300,11 +317,32 @@ function updateChart() {
     financeChart.update();
 }
 
+function getFilteredTransactions() {
+    if (!currentFilter) return transactions;
+    
+    const startDate = new Date(currentFilter.start);
+    startDate.setHours(0, 0, 0, 0);
+    
+    const endDate = new Date(currentFilter.end);
+    endDate.setHours(23, 59, 59, 999);
+
+    return transactions.filter(t => {
+        const transDate = new Date(t.date);
+        return transDate >= startDate && transDate <= endDate;
+    });
+}
+
 function renderTransactions() {
+    console.log('[DEBUG] All transactions:', transactions); 
     const container = document.getElementById('transactions');
     container.innerHTML = '';
 
     const filtered = getFilteredTransactions();
+
+    if (!transaction.id) {
+        console.error('Transaction missing ID:', transaction);
+        return; // Skip invalid data
+    }
 
     filtered.forEach(transaction => {
         const div = document.createElement('div');
