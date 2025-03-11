@@ -81,7 +81,6 @@ function showNotification(message, type = "success") {
     Swal.fire({
         title: message,
         icon: type,
-        toast: true,
         width: "30rem",
         padding: "2rem",
         position: "center",
