@@ -86,10 +86,10 @@ function showNotification(message, type = "success") {
         position: "center",
         showConfirmButton: true,
         confirmButtonText: "OK",
-        allowOutsideClick: false
+        allowOutsideClick: false,
+        focusConfirm: true,
     });
 }
-
 
 // ================= AUTHENTICATION =================
 function showAuthUI() {
