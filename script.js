@@ -94,7 +94,7 @@ function showNotification(message, type = "success") {
 // ================= AUTHENTICATION =================
 function showAuthUI() {
     const authContainer = document.getElementById('authContainer');
-    authContainer.innerHTML = 
+    authContainer.innerHTML = `
         <h2>🔐 Silakan Login/Daftar</h2>
         <form class="auth-form" onsubmit="return false;">
             <input type="email" id="authEmail" placeholder="Email" required>
@@ -104,7 +104,7 @@ function showAuthUI() {
             <button type="button" onclick="showResetPassword()">Lupa Password?</button>
             <div id="authError" class="auth-error"></div>
         </form>
-    ;
+    `;
 }
 
 async function handleAuth() {
@@ -281,9 +281,9 @@ function updateSummary() {
     const expense = filtered.filter(t => t.type === 'expense').reduce((a, b) => a + b.amount, 0);
     const balance = income - expense;
 
-    document.getElementById('balance').textContent = Rp${balance.toLocaleString('id-ID')};
-    document.getElementById('income').textContent = Rp${income.toLocaleString('id-ID')};
-    document.getElementById('expense').textContent = Rp${expense.toLocaleString('id-ID')};
+    document.getElementById('balance').textContent = `Rp${balance.toLocaleString('id-ID')}`;
+    document.getElementById('income').textContent = `Rp${income.toLocaleString('id-ID')}`;
+    document.getElementById('expense').textContent = `Rp${expense.toLocaleString('id-ID')}`;
 }
 
 function updateChart() {
@@ -301,7 +301,7 @@ function renderTransactions() {
     transactions.forEach(transaction => {
         const div = document.createElement('div');
         div.className = 'transaction-item';
-        div.innerHTML = 
+        div.innerHTML = `
             <div style="flex: 2">
                 <div>${transaction.name}</div>
                 <small>${transaction.date.toLocaleDateString('id-ID')}</small>
@@ -316,7 +316,7 @@ function renderTransactions() {
                     <button class="delete-btn" data-id="${transaction.id}">🗑️ Hapus</button>
                 </div>
             </div>
-        ;
+        `;
         container.appendChild(div);
     });
 
