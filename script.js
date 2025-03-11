@@ -24,7 +24,7 @@ let unsubscribeTransactions = null;
 function showAuthUI() {
     const authContainer = document.getElementById('authContainer');
     authContainer.innerHTML = `
-        <h2>🔐 Masuk/Daftar</h2>
+        <h2>🔐 Silakan Login/Daftar</h2>
         <form class="auth-form" onsubmit="return false;">
             <input type="email" id="authEmail" placeholder="Email" required>
             <input type="password" id="authPassword" placeholder="Password" required>
@@ -34,7 +34,6 @@ function showAuthUI() {
             <div id="authError" class="auth-error"></div>
         </form>
     `;
-    authContainer.classList.add('active');
 }
 
 async function handleAuth() {
@@ -300,18 +299,26 @@ document.getElementById('transactionForm').addEventListener('submit', async e =>
 
 // Initialize App
 auth.onAuthStateChanged(user => {
+    const loading = document.getElementById('loading');
     const authContainer = document.getElementById('authContainer');
-    const dashboard = document.getElementById('dashboard');
+    const appContent = document.getElementById('appContent');
 
-    if (user) {
-        authContainer.classList.remove('active');
-        dashboard.style.display = 'block';
-        setupRealTimeListener();
-    } else {
-        authContainer.classList.add('active');
-        dashboard.style.display = 'none';
-        showAuthUI();
-    }
+    loading.style.display = 'flex';
+
+    setTimeout(() => {
+        if (user) {
+            // Jika user sudah login
+            authContainer.style.display = 'none';
+            appContent.style.display = 'block';
+            setupRealTimeListener();
+        } else {
+            // Jika user belum login
+            authContainer.style.display = 'block';
+            appContent.style.display = 'none';
+            showAuthUI();
+        }
+        loading.style.display = 'none';
+    }, 1000);
 });
 
 document.addEventListener('DOMContentLoaded', () => {
