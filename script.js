@@ -38,41 +38,41 @@ auth.onAuthStateChanged(user => {
         unsubscribeTransactions = null;
     }
 
-    // Hapus timeout yang tidak perlu
-    if (user) {
-        // Handle UI untuk user logged in
-        authContainer.style.display = "none";
-        appContent.style.display = "block";
-        logoutButton.style.display = "inline-block";
-        formSection.style.display = "block";
-        filterSection.style.display = "block";
-        transactionHistory.style.display = "block";
+    setTimeout(() => {
+        if (user) {
+            // Jika sudah login, tampilkan elemen yang diperlukan
+            authContainer.style.display = "none";
+            appContent.style.display = "block";
+            logoutButton.style.display = "inline-block";
+            formSection.style.display = "block";
+            filterSection.style.display = "block";
+            transactionHistory.style.display = "block";
 
-        // Setup listener dengan error handling
-        try {
-            setupRealTimeListener();
-        } catch (error) {
-            console.error('Gagal setup listener:', error);
-            showNotification("Gagal memuat data transaksi", "error");
+            // Setup listener dengan error handling
+            try {
+                setupRealTimeListener();
+            } catch (error) {
+                console.error('Gagal setup listener:', error);
+                showNotification("Gagal memuat data transaksi", "error");
+            }
+        } else {
+            // Jika belum login, sembunyikan semua elemen aplikasi
+            authContainer.style.display = "block";
+            appContent.style.display = "none";
+            logoutButton.style.display = "none";
+            formSection.style.display = "none";
+            filterSection.style.display = "none";
+            transactionHistory.style.display = "none";
+
+            // Reset state aplikasi
+            transactions = [];
+            currentEditId = null;
+            updateAll();
+            
+            showAuthUI();
         }
-    } else {
-        // Handle UI untuk user logged out
-        authContainer.style.display = "block";
-        appContent.style.display = "none";
-        logoutButton.style.display = "none";
-        formSection.style.display = "none";
-        filterSection.style.display = "none";
-        transactionHistory.style.display = "none";
-
-        // Reset state aplikasi
-        transactions = [];
-        currentEditId = null;
-        updateAll();
-        
-        showAuthUI();
-    }
-    
-    loading.style.display = 'none';
+        loading.style.display = 'none';
+    }, 1000);
 });
 
 function showAppContent() {
