@@ -146,16 +146,21 @@ function showResetPassword() {
 }
 
 function logout() {
-    auth.signOut().then(() => {
-        // Reset semua state
-        transactions = [];
-        currentEditId = null;
-        if (unsubscribeTransactions) unsubscribeTransactions();
-        
-        // Tampilkan pesan logout
-        alert('Anda telah berhasil logout!');
-    }).catch(error => {
-        alert('Error saat logout: ' + error.message);
+    Swal.fire({
+        title: "Konfirmasi Logout",
+        text: "Anda yakin ingin logout?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Ya, Logout",
+        cancelButtonText: "Batal"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            auth.signOut().then(() => {
+                showNotification("👋 Anda telah logout!");
+            }).catch(error => {
+                showNotification("Error: " + error.message, "error");
+            });
+        }
     });
 }
 
