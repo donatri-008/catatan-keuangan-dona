@@ -155,6 +155,10 @@ body {
     gap: 15px;
 }
 
+.balance-card h2 {
+    font-size: 60px;
+}
+
 .balance-amount {
     font-size: 3em;
     font-weight: bold;
