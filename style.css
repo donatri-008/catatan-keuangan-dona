@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Chewy&family=Fredoka:wght@300..700&display=swap');
+
 :root {
     --primary: #ff85a2;
     --secondary: #ffb6c1;
@@ -28,7 +30,7 @@ body {
     padding: 20px;
     background-color: var(--background);
     color: var(--text);
-    font-family: 'Comic Neue', cursive;
+    font-family: 'Chewy', Fredoka;
 }
 
 /* Loading State */
