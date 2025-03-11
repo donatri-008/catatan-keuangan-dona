@@ -2,7 +2,7 @@ const firebaseConfig = {
     apiKey: "AIzaSyDM3ML_qv6WSOwId_e5IwQGRezsJkGOVYs",
     authDomain: "catatan-keuangan-59ffe.firebaseapp.com",
     projectId: "catatan-keuangan-59ffe",
-    storageBucket: "catatan-keuangan-59ffe.firebasestorage.app",
+    storageBucket: "catatan-keuangan-59ffe.appspot.com",
     messagingSenderId: "802299331987",
     appId: "1:802299331987:web:27e2ef6fb1d621ee0d9466",
     measurementId: "G-G699EJBGSB"
@@ -34,7 +34,6 @@ auth.onAuthStateChanged(user => {
 
     setTimeout(() => {
         if (user) {
-            // Jika sudah login, tampilkan elemen yang diperlukan
             authContainer.style.display = "none";
             appContent.style.display = "block";
             logoutButton.style.display = "inline-block";
@@ -44,7 +43,6 @@ auth.onAuthStateChanged(user => {
 
             setupRealTimeListener();
         } else {
-            // Jika belum login, sembunyikan semua elemen aplikasi
             authContainer.style.display = "block";
             appContent.style.display = "none";
             logoutButton.style.display = "none";
@@ -57,25 +55,6 @@ auth.onAuthStateChanged(user => {
         loading.style.display = 'none';
     }, 1000);
 });
-
-function showAppContent() {
-    const appContent = document.getElementById("appContent");
-    const authContainer = document.getElementById("authContainer");
-    
-    if (appContent) {
-        appContent.classList.add("active");
-        console.log("App content ditampilkan.");
-    } else {
-        console.log("Elemen appContent tidak ditemukan!");
-    }
-
-    if (authContainer) {
-        authContainer.classList.remove("active");
-        console.log("Auth container disembunyikan.");
-    } else {
-        console.log("Elemen authContainer tidak ditemukan!");
-    }
-}
 
 function showNotification(message, type = "success") {
     Swal.fire({
@@ -194,25 +173,23 @@ function initChart() {
 
 async function setupRealTimeListener() {
     try {
+        if (unsubscribeTransactions) unsubscribeTransactions();
+        
         unsubscribeTransactions = db.collection('users')
             .doc(auth.currentUser.uid)
             .collection('transactions')
             .orderBy('date', 'desc')
             .onSnapshot(snapshot => {
-                if (!snapshot.empty) {
-                    transactions = snapshot.docs.map(doc => ({
-                        id: doc.id,
-                        ...doc.data(),
-                        date: doc.data().date.toDate()
-                    }));
-                    console.log("Transaksi berhasil dimuat:", transactions);
-                    updateAll();
-                } else {
-                    console.warn("Tidak ada transaksi ditemukan.");
-                }
+                transactions = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data(),
+                    date: doc.data().date.toDate()
+                }));
+                console.log('Transactions updated:', transactions);
+                updateAll();
             }, error => {
-                console.error('Error listening to realtime updates:', error);
-                alert('Gagal memuat data transaksi');
+                console.error('Error listening to updates:', error);
+                showNotification("Gagal memuat transaksi", "error");
             });
     } catch (error) {
         console.error('Error setting up listener:', error);
@@ -222,9 +199,11 @@ async function setupRealTimeListener() {
 async function saveTransaction(transaction) {
     try {
         const transactionData = {
-            ...transaction,
+            name: transaction.name,
             amount: Number(transaction.amount),
-            date: firebase.firestore.Timestamp.fromDate(new Date(transaction.date))
+            date: firebase.firestore.Timestamp.fromDate(new Date(transaction.date)),
+            category: transaction.category,
+            type: transaction.type
         };
 
         if (transaction.id) {
@@ -240,7 +219,7 @@ async function saveTransaction(transaction) {
                 .add(transactionData);
         }
     } catch (error) {
-        alert('Error menyimpan transaksi: ' + error.message);
+        showNotification("Error menyimpan transaksi: " + error.message, "error");
     }
 }
 
@@ -254,12 +233,17 @@ async function deleteTransaction(id) {
         cancelButtonText: "Batal"
     }).then((result) => {
         if (result.isConfirmed) {
-            const index = transactions.findIndex(t => t.id === id);
-            if (index !== -1) {
-                transactions.splice(index, 1);
-                renderTransactions();
-                showNotification("🗑️ Transaksi berhasil dihapus!", "success");
-            }
+            db.collection('users')
+                .doc(auth.currentUser.uid)
+                .collection('transactions')
+                .doc(id)
+                .delete()
+                .then(() => {
+                    showNotification("🗑️ Transaksi berhasil dihapus!", "success");
+                })
+                .catch(error => {
+                    showNotification("Gagal menghapus transaksi: " + error.message, "error");
+                });
         }
     });
 }
@@ -272,11 +256,7 @@ function updateAll() {
 }
 
 function updateSummary() {
-    const filtered = currentFilter ? transactions.filter(t => 
-        new Date(t.date) >= new Date(currentFilter.start) && 
-        new Date(t.date) <= new Date(currentFilter.end)
-    ) : transactions;
-
+    const filtered = getFilteredTransactions();
     const income = filtered.filter(t => t.type === 'income').reduce((a, b) => a + b.amount, 0);
     const expense = filtered.filter(t => t.type === 'expense').reduce((a, b) => a + b.amount, 0);
     const balance = income - expense;
@@ -286,9 +266,23 @@ function updateSummary() {
     document.getElementById('expense').textContent = `Rp${expense.toLocaleString('id-ID')}`;
 }
 
+function getFilteredTransactions() {
+    if (!currentFilter) return transactions;
+    
+    const startDate = new Date(currentFilter.start);
+    const endDate = new Date(currentFilter.end);
+    endDate.setHours(23, 59, 59, 999);
+
+    return transactions.filter(t => 
+        t.date >= startDate && 
+        t.date <= endDate
+    );
+}
+
 function updateChart() {
-    const income = transactions.filter(t => t.type === 'income').reduce((a, b) => a + b.amount, 0);
-    const expense = transactions.filter(t => t.type === 'expense').reduce((a, b) => a + b.amount, 0);
+    const filtered = getFilteredTransactions();
+    const income = filtered.filter(t => t.type === 'income').reduce((a, b) => a + b.amount, 0);
+    const expense = filtered.filter(t => t.type === 'expense').reduce((a, b) => a + b.amount, 0);
     
     financeChart.data.datasets[0].data = [income, expense];
     financeChart.update();
@@ -298,7 +292,9 @@ function renderTransactions() {
     const container = document.getElementById('transactions');
     container.innerHTML = '';
 
-    transactions.forEach(transaction => {
+    const filtered = getFilteredTransactions();
+
+    filtered.forEach(transaction => {
         const div = document.createElement('div');
         div.className = 'transaction-item';
         div.innerHTML = `
@@ -320,13 +316,16 @@ function renderTransactions() {
         container.appendChild(div);
     });
 
-    // Tambahkan event listener untuk tombol Edit dan Hapus dengan event delegation
+    // Perbaikan event delegation menggunakan closest()
     container.addEventListener("click", function(event) {
-        if (event.target.classList.contains("edit-btn")) {
-            const id = event.target.getAttribute("data-id");
+        const editBtn = event.target.closest('.edit-btn');
+        const deleteBtn = event.target.closest('.delete-btn');
+        
+        if (editBtn) {
+            const id = editBtn.dataset.id;
             editTransaction(id);
-        } else if (event.target.classList.contains("delete-btn")) {
-            const id = event.target.getAttribute("data-id");
+        } else if (deleteBtn) {
+            const id = deleteBtn.dataset.id;
             deleteTransaction(id);
         }
     });
@@ -345,9 +344,11 @@ function getCategoryIcon(category) {
 }
 
 function editTransaction(id) {
+    console.log('Mencari transaksi dengan ID:', id);
+    console.log('Daftar transaksi:', transactions);
+    
     const transaction = transactions.find(t => t.id === id);
-    console.log("Transaction to edit:", transaction); // Debugging
-
+    
     if (transaction) {
         currentEditId = id;
         document.getElementById('transactionName').value = transaction.name;
@@ -357,11 +358,9 @@ function editTransaction(id) {
         document.getElementById('transactionType').value = transaction.type;
         document.getElementById('submitButton').textContent = '💾 Simpan Perubahan';
         window.scrollTo({ top: 0, behavior: 'smooth' });
-
-        showNotification("✏️ Edit transaksi siap dilakukan!", "info");
     } else {
-        console.error("Transaksi tidak ditemukan:", id);
-        showNotification("❌ Transaksi tidak ditemukan!", "error");
+        console.error('Transaksi tidak ditemukan dengan ID:', id);
+        showNotification("Transaksi tidak ditemukan!", "error");
     }
 }
 
@@ -369,8 +368,6 @@ function cancelEdit() {
     currentEditId = null;
     document.getElementById('transactionForm').reset();
     document.getElementById('submitButton').textContent = '➕ Tambah Transaksi';
-
-    showNotification("Edit transaksi dibatalkan!", "error");
 }
 
 function filterTransactions() {
@@ -378,7 +375,10 @@ function filterTransactions() {
     const end = document.getElementById('endDate').value;
     
     if (start && end) {
-        currentFilter = { start, end };
+        currentFilter = { 
+            start: new Date(start),
+            end: new Date(end)
+        };
     } else {
         currentFilter = null;
     }
@@ -393,46 +393,32 @@ function clearFilter() {
     updateAll();
 }
 
-function toggleTheme() {
-    const theme = document.body.getAttribute('data-theme');
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
-    document.body.setAttribute('data-theme', newTheme);
-    document.querySelector('.theme-btn').textContent = newTheme === 'dark' ? '🌙' : '🌞';
-    localStorage.setItem('theme', newTheme);
-}
-
 // Event Listeners
 document.getElementById('transactionForm').addEventListener('submit', async e => {
     e.preventDefault();
 
-      // Validasi input
     const amount = parseFloat(document.getElementById('transactionAmount').value);
-    if (isNaN(amount) || amount <= 0) {
-        Swal.fire({
-            title: "Jumlah tidak valid!",
-            text: "Jumlah transaksi harus lebih dari 0.",
-            icon: "warning"
-        });
+    if (isNaN(amount) {
+        showNotification("Jumlah transaksi tidak valid!", "error");
         return;
     }
-    
+
     const transaction = {
         id: currentEditId,
-        name: document.getElementById('transactionName').value,
-        amount: document.getElementById('transactionAmount').value,
+        name: document.getElementById('transactionName').value.trim(),
+        amount: amount,
         date: document.getElementById('transactionDate').value,
         category: document.getElementById('transactionCategory').value,
         type: document.getElementById('transactionType').value
     };
 
+    if (!transaction.name || !transaction.date || !transaction.category || !transaction.type) {
+        showNotification("Harap isi semua field!", "error");
+        return;
+    }
+
     await saveTransaction(transaction);
     cancelEdit();
-
-    if (currentEditId) {
-        showNotification("Transaksi berhasil diperbarui!");
-    } else {
-        showNotification("Transaksi berhasil ditambahkan!");
-    }
 });
 
 document.addEventListener('DOMContentLoaded', () => {
