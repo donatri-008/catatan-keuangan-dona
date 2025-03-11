@@ -60,6 +60,7 @@ body {
 }
 
 .auth-container {
+    display: none;
     max-width: 400px;
     margin: 50px auto;
     padding: 30px;
@@ -74,10 +75,6 @@ body {
 
 #appContent.active {
     display: block; /* Tampilkan saat login */
-}
-
-.auth-container {
-    display: none; /* Sembunyikan auth container */
 }
 
 .auth-container.active {
