@@ -1,11 +1,11 @@
 const firebaseConfig = {
-  apiKey: "AIzaSyDM3ML_qv6WSOwId_e5IwQGRezsJkGOVYs",
-  authDomain: "catatan-keuangan-59ffe.firebaseapp.com",
-  projectId: "catatan-keuangan-59ffe",
-  storageBucket: "catatan-keuangan-59ffe.firebasestorage.app",
-  messagingSenderId: "802299331987",
-  appId: "1:802299331987:web:27e2ef6fb1d621ee0d9466",
-  measurementId: "G-G699EJBGSB"
+    apiKey: "AIzaSyDM3ML_qv6WSOwId_e5IwQGRezsJkGOVYs",
+    authDomain: "catatan-keuangan-59ffe.firebaseapp.com",
+    projectId: "catatan-keuangan-59ffe",
+    storageBucket: "catatan-keuangan-59ffe.firebasestorage.app",
+    messagingSenderId: "802299331987",
+    appId: "1:802299331987:web:27e2ef6fb1d621ee0d9466",
+    measurementId: "G-G699EJBGSB"
 };
 
 // Inisialisasi Firebase
@@ -76,6 +76,20 @@ function showAppContent() {
         console.log("Elemen authContainer tidak ditemukan!");
     }
 }
+
+function showNotification(message, type = "success") {
+    Swal.fire({
+        title: message,
+        icon: type,
+        toast: true,
+        width: "30rem",
+        padding: "2rem",
+        position: "center",
+        showConfirmButton: false,
+        confirmButtonText: "OK"
+    });
+}
+
 
 // ================= AUTHENTICATION =================
 function showAuthUI() {
@@ -221,17 +235,23 @@ async function saveTransaction(transaction) {
 }
 
 async function deleteTransaction(id) {
-    if (confirm('Apakah Anda yakin ingin menghapus transaksi ini?')) {
-        try {
-            await db.collection('users')
-                .doc(auth.currentUser.uid)
-                .collection('transactions')
-                .doc(id)
-                .delete();
-        } catch (error) {
-            alert('Error menghapus transaksi: ' + error.message);
+    Swal.fire({
+        title: "Apakah Anda yakin?",
+        text: "Transaksi ini akan dihapus secara permanen!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Ya, hapus!",
+        cancelButtonText: "Batal"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const index = transactions.findIndex(t => t.id === id);
+            if (index !== -1) {
+                transactions.splice(index, 1);
+                renderTransactions();
+                showNotification("🗑️ Transaksi berhasil dihapus!", "success");
+            }
         }
-    }
+    });
 }
 
 // ================= UI FUNCTIONS =================
@@ -314,6 +334,8 @@ function editTransaction(id) {
         document.getElementById('transactionType').value = transaction.type;
         document.getElementById('submitButton').textContent = '💾 Simpan Perubahan';
         window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        showNotification("✏️ Edit transaksi siap dilakukan!", "info");
     }
 }
 
@@ -321,6 +343,8 @@ function cancelEdit() {
     currentEditId = null;
     document.getElementById('transactionForm').reset();
     document.getElementById('submitButton').textContent = '➕ Tambah Transaksi';
+
+    showNotification("Edit transaksi dibatalkan!", "error");
 }
 
 function filterTransactions() {
@@ -358,7 +382,11 @@ document.getElementById('transactionForm').addEventListener('submit', async e =>
       // Validasi input
     const amount = parseFloat(document.getElementById('transactionAmount').value);
     if (isNaN(amount) || amount <= 0) {
-        alert('Jumlah transaksi harus lebih dari 0');
+        Swal.fire({
+            title: "Jumlah tidak valid!",
+            text: "Jumlah transaksi harus lebih dari 0.",
+            icon: "warning"
+        });
         return;
     }
     
@@ -373,6 +401,12 @@ document.getElementById('transactionForm').addEventListener('submit', async e =>
 
     await saveTransaction(transaction);
     cancelEdit();
+
+    if (currentEditId) {
+        showNotification("Transaksi berhasil diperbarui!");
+    } else {
+        showNotification("Transaksi berhasil ditambahkan!");
+    }
 });
 
 document.addEventListener('DOMContentLoaded', () => {
