@@ -36,6 +36,20 @@ function showAuthUI() {
     `;
 }
 
+function logout() {
+    auth.signOut().then(() => {
+        // Reset semua state
+        transactions = [];
+        currentEditId = null;
+        if (unsubscribeTransactions) unsubscribeTransactions();
+        
+        // Tampilkan pesan logout
+        alert('Anda telah berhasil logout!');
+    }).catch(error => {
+        alert('Error saat logout: ' + error.message);
+    });
+}
+
 async function handleAuth() {
     const email = document.getElementById('authEmail').value;
     const password = document.getElementById('authPassword').value;
