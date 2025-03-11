@@ -156,7 +156,7 @@ body {
 }
 
 .balance-amount {
-    font-size: 3em;
+    font-size: 5em;
     font-weight: bold;
     color: var(--primary);
     margin: 20px 0;
