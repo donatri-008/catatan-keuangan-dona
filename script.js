@@ -30,14 +30,14 @@ auth.onAuthStateChanged(user => {
 
     setTimeout(() => {
         if (user) {
-            // Tampilkan SEMUA konten aplikasi
+            // Tampilkan semua konten aplikasi
             authContainer.classList.remove('active');
-            appContent.style.display = 'block';
+            appContent.classList.add('active');
             setupRealTimeListener();
         } else {
-            // Sembunyikan SEMUA konten aplikasi
+            // Sembunyikan semua konten aplikasi
             authContainer.classList.add('active');
-            appContent.style.display = 'none';
+            appContent.classList.remove('active');
             showAuthUI();
         }
         loading.style.display = 'none';
