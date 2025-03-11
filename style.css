@@ -28,7 +28,7 @@ body {
     padding: 20px;
     background-color: var(--background);
     color: var(--text);
-    font-family: 'Comic Neue';
+    font-family: 'Comic Neue', cursive;
 }
 
 /* Loading State */
