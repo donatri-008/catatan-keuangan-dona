@@ -30,13 +30,13 @@ auth.onAuthStateChanged(user => {
 
     setTimeout(() => {
         if (user) {
-            // Jika user sudah login
-            authContainer.style.display = 'none';
+            // Tampilkan SEMUA konten aplikasi
+            authContainer.classList.remove('active');
             appContent.style.display = 'block';
             setupRealTimeListener();
         } else {
-            // Jika user belum login
-            authContainer.style.display = 'block';
+            // Sembunyikan SEMUA konten aplikasi
+            authContainer.classList.add('active');
             appContent.style.display = 'none';
             showAuthUI();
         }
