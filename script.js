@@ -85,8 +85,9 @@ function showNotification(message, type = "success") {
         width: "30rem",
         padding: "2rem",
         position: "center",
-        showConfirmButton: false,
-        confirmButtonText: "OK"
+        showConfirmButton: true,
+        confirmButtonText: "OK",
+        allowOutsideClick: false
     });
 }
 
