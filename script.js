@@ -200,12 +200,15 @@ async function setupRealTimeListener() {
             .orderBy('date', 'desc')
             .onSnapshot(snapshot => {
                 if (!snapshot.empty) {
-                    transactions = snapshot.docs.map(doc => ({
-                        id: doc.id,
-                        ...doc.data(),
-                        date: doc.data().date.toDate()
-                    }));
-                    console.log("Transaksi berhasil dimuat:", transactions);
+                    transactions = snapshot.docs.map(doc => {
+                        console.log("Dokumen transaksi dari Firestore:", doc.data());
+                        return {
+                            id: doc.id,
+                            ...doc.data(),
+                            date: doc.data().date.toDate()
+                        };
+                    });
+                    console.log("Transaksi yang sudah diproses:", transactions);
                     updateAll();
                 } else {
                     console.warn("Tidak ada transaksi ditemukan.");
@@ -221,26 +224,15 @@ async function setupRealTimeListener() {
 
 async function saveTransaction(transaction) {
     try {
-        const transactionData = {
-            ...transaction,
-            amount: Number(transaction.amount),
-            date: firebase.firestore.Timestamp.fromDate(new Date(transaction.date))
-        };
-
-        if (transaction.id) {
-            await db.collection('users')
-                .doc(auth.currentUser.uid)
-                .collection('transactions')
-                .doc(transaction.id)
-                .update(transactionData);
-        } else {
-            await db.collection('users')
-                .doc(auth.currentUser.uid)
-                .collection('transactions')
-                .add(transactionData);
-        }
+        const userRef = db.collection('users').doc(auth.currentUser.uid);
+        const transactionRef = userRef.collection('transactions').doc(transaction.id);
+        await transactionRef.set(transaction, { merge: true });
+        showNotification("✅ Transaksi berhasil diperbarui!", "success");
+        currentEditId = null;
+        document.getElementById('submitButton').textContent = '➕ Tambah Transaksi';
     } catch (error) {
-        alert('Error menyimpan transaksi: ' + error.message);
+        console.error("Error saat menyimpan transaksi:", error);
+        showNotification("❌ Gagal menyimpan transaksi", "error");
     }
 }
 
@@ -320,13 +312,17 @@ function renderTransactions() {
         container.appendChild(div);
     });
 
-    // Tambahkan event listener untuk tombol Edit dan Hapus dengan event delegation
+    const container = document.getElementById("transactionsContainer");
     container.addEventListener("click", function(event) {
+        console.log("Tombol yang diklik:", event.target);
+        
         if (event.target.classList.contains("edit-btn")) {
             const id = event.target.getAttribute("data-id");
+            console.log("ID transaksi yang dikirim ke editTransaction:", id);
             editTransaction(id);
         } else if (event.target.classList.contains("delete-btn")) {
             const id = event.target.getAttribute("data-id");
+            console.log("ID transaksi yang dikirim ke deleteTransaction:", id);
             deleteTransaction(id);
         }
     });
@@ -345,9 +341,11 @@ function getCategoryIcon(category) {
 }
 
 function editTransaction(id) {
-    const transaction = transactions.find(t => t.id === id);
-    console.log("Transaction to edit:", transaction); // Debugging
+    console.log("ID transaksi yang diklik:", id);
+    console.log("Daftar transaksi:", transactions);
 
+    const transaction = transactions.find(t => t.id === id);
+    
     if (transaction) {
         currentEditId = id;
         document.getElementById('transactionName').value = transaction.name;
@@ -360,7 +358,7 @@ function editTransaction(id) {
 
         showNotification("✏️ Edit transaksi siap dilakukan!", "info");
     } else {
-        console.error("Transaksi tidak ditemukan:", id);
+        console.error("❌ Transaksi tidak ditemukan dengan ID:", id);
         showNotification("❌ Transaksi tidak ditemukan!", "error");
     }
 }
