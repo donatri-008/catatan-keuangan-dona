@@ -58,6 +58,25 @@ auth.onAuthStateChanged(user => {
     }, 1000);
 });
 
+function showAppContent() {
+    const appContent = document.getElementById("appContent");
+    const authContainer = document.getElementById("authContainer");
+    
+    if (appContent) {
+        appContent.classList.add("active");
+        console.log("App content ditampilkan.");
+    } else {
+        console.log("Elemen appContent tidak ditemukan!");
+    }
+
+    if (authContainer) {
+        authContainer.classList.remove("active");
+        console.log("Auth container disembunyikan.");
+    } else {
+        console.log("Elemen authContainer tidak ditemukan!");
+    }
+}
+
 // ================= AUTHENTICATION =================
 function showAuthUI() {
     const authContainer = document.getElementById('authContainer');
