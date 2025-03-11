@@ -25,34 +25,38 @@ auth.onAuthStateChanged(user => {
     const loading = document.getElementById('loading');
     const authContainer = document.getElementById('authContainer');
     const appContent = document.getElementById('appContent');
-    const formSection = document.getElementById('formSection'); // Form input transaksi
-    const filterSection = document.getElementById('filterSection'); // Filter transaksi
-    const transactionHistory = document.getElementById('transactionHistory'); // Riwayat transaksi
+    const logoutButton = document.getElementById('logoutButton');
+    const formSection = document.getElementById('formSection');
+    const filterSection = document.getElementById('filterSection');
+    const transactionHistory = document.getElementById('transactionHistory');
 
     loading.style.display = 'flex';
 
     setTimeout(() => {
         if (user) {
-            // Tampilkan semua elemen aplikasi
-            authContainer.classList.remove('active');
-            appContent.classList.add('active');
-            formSection.classList.remove('hidden');
-            filterSection.classList.remove('hidden');
-            transactionHistory.classList.remove('hidden');
+            // Jika sudah login, tampilkan elemen yang diperlukan
+            authContainer.style.display = "none";
+            appContent.style.display = "block";
+            logoutButton.style.display = "inline-block";
+            formSection.style.display = "block";
+            filterSection.style.display = "block";
+            transactionHistory.style.display = "block";
+
             setupRealTimeListener();
         } else {
-            // Sembunyikan semua elemen aplikasi
-            authContainer.classList.add('active');
-            appContent.classList.remove('active');
-            formSection.classList.add('hidden');
-            filterSection.classList.add('hidden');
-            transactionHistory.classList.add('hidden');
+            // Jika belum login, sembunyikan semua elemen aplikasi
+            authContainer.style.display = "block";
+            appContent.style.display = "none";
+            logoutButton.style.display = "none";
+            formSection.style.display = "none";
+            filterSection.style.display = "none";
+            transactionHistory.style.display = "none";
+
             showAuthUI();
         }
         loading.style.display = 'none';
     }, 1000);
 });
-
 
 // ================= AUTHENTICATION =================
 function showAuthUI() {
