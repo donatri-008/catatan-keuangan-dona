@@ -30,7 +30,7 @@ body {
     padding: 20px;
     background-color: var(--background);
     color: var(--text);
-    font-family: 'Chewy', Fredoka;
+    font-family: 'Fredoka', Chewy;
 }
 
 /* Loading State */
