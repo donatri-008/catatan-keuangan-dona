@@ -156,7 +156,7 @@ body {
 }
 
 .balance-card h2 {
-    font-size: 35px;
+    font-size: 45px;
 }
 
 .balance-amount {
@@ -338,6 +338,10 @@ button:hover {
     .dashboard {
         gap: 15px;
         margin-bottom: 15px;
+    }
+
+    .balance-card h2 {
+        font-size: 20px
     }
 
     .balance-amount {
