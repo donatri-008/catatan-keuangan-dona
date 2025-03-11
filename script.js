@@ -25,24 +25,34 @@ auth.onAuthStateChanged(user => {
     const loading = document.getElementById('loading');
     const authContainer = document.getElementById('authContainer');
     const appContent = document.getElementById('appContent');
+    const formSection = document.getElementById('formSection'); // Form input transaksi
+    const filterSection = document.getElementById('filterSection'); // Filter transaksi
+    const transactionHistory = document.getElementById('transactionHistory'); // Riwayat transaksi
 
     loading.style.display = 'flex';
 
     setTimeout(() => {
         if (user) {
-            // Tampilkan semua konten aplikasi
+            // Tampilkan semua elemen aplikasi
             authContainer.classList.remove('active');
             appContent.classList.add('active');
+            formSection.classList.remove('hidden');
+            filterSection.classList.remove('hidden');
+            transactionHistory.classList.remove('hidden');
             setupRealTimeListener();
         } else {
-            // Sembunyikan semua konten aplikasi
+            // Sembunyikan semua elemen aplikasi
             authContainer.classList.add('active');
             appContent.classList.remove('active');
+            formSection.classList.add('hidden');
+            filterSection.classList.add('hidden');
+            transactionHistory.classList.add('hidden');
             showAuthUI();
         }
         loading.style.display = 'none';
     }, 1000);
 });
+
 
 // ================= AUTHENTICATION =================
 function showAuthUI() {
