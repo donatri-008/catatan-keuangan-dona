@@ -72,6 +72,18 @@ body {
     display: none;
 }
 
+#appContent.active {
+    display: block; /* Tampilkan saat login */
+}
+
+.auth-container {
+    display: none; /* Sembunyikan auth container */
+}
+
+.auth-container.active {
+    display: block; /* Tampilkan saat logout */
+}
+
 .container {
     max-width: 1200px;
     margin: 0 auto;
