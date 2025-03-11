@@ -70,15 +70,15 @@ body {
 }
 
 #appContent {
-    display: none;
+    display: none !important;
 }
 
 #appContent.active {
-    display: block; /* Tampilkan saat login */
+    display: block !important;
 }
 
 .auth-container.active {
-    display: block; /* Tampilkan saat logout */
+    display: block;
 }
 
 .container {
