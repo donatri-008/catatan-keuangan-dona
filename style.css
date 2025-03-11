@@ -205,6 +205,10 @@ body {
     align-items: center;
 }
 
+.chart-card h2 {
+    font-size: 30px;
+}
+
 .chart-card canvas {
     max-height: 250px;
     margin: 15px 0;
@@ -341,12 +345,16 @@ button:hover {
     }
 
     .balance-card h2 {
-        font-size: 20px
+        font-size: 25px
     }
 
     .balance-amount {
         font-size: 2em;
         margin: 10px 0;
+    }
+
+    .chart-card h2 {
+    font-size: 25px;
     }
 
     .chart-card canvas {
