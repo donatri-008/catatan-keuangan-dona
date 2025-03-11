@@ -44,28 +44,6 @@ auth.onAuthStateChanged(user => {
     }, 1000);
 });
 
-async function setupRealTimeListener() {
-    try {
-        unsubscribeTransactions = db.collection('users')
-            .doc(auth.currentUser.uid)
-            .collection('transactions')
-            .orderBy('date', 'desc')
-            .onSnapshot(snapshot => {
-                transactions = snapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data(),
-                    date: doc.data().date.toDate()
-                }));
-                updateAll();
-            }, error => {
-                console.error('Error listening to realtime updates:', error);
-                alert('Gagal memuat data transaksi');
-            });
-    } catch (error) {
-        console.error('Error setting up listener:', error);
-    }
-}
-
 // ================= AUTHENTICATION =================
 function showAuthUI() {
     const authContainer = document.getElementById('authContainer');
@@ -162,19 +140,26 @@ function initChart() {
     });
 }
 
-function setupRealTimeListener() {
-    unsubscribeTransactions = db.collection('users')
-        .doc(auth.currentUser.uid)
-        .collection('transactions')
-        .orderBy('date', 'desc')
-        .onSnapshot(snapshot => {
-            transactions = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data(),
-                date: doc.data().date.toDate()
-            }));
-            updateAll();
-        });
+async function setupRealTimeListener() {
+    try {
+        unsubscribeTransactions = db.collection('users')
+            .doc(auth.currentUser.uid)
+            .collection('transactions')
+            .orderBy('date', 'desc')
+            .onSnapshot(snapshot => {
+                transactions = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data(),
+                    date: doc.data().date.toDate()
+                }));
+                updateAll();
+            }, error => {
+                console.error('Error listening to realtime updates:', error);
+                alert('Gagal memuat data transaksi');
+            });
+    } catch (error) {
+        console.error('Error setting up listener:', error);
+    }
 }
 
 async function saveTransaction(transaction) {
