@@ -155,8 +155,12 @@ body {
     gap: 15px;
 }
 
+.h2 {
+    font-size: 4em;
+}
+
 .balance-amount {
-    font-size: 5em;
+    font-size: 3em;
     font-weight: bold;
     color: var(--primary);
     margin: 20px 0;
