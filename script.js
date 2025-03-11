@@ -1,11 +1,11 @@
 const firebaseConfig = {
-    apiKey: "AIzaSyDM3ML_qv6WSOwId_e5IwQGRezsJkGOVYs",
-    authDomain: "catatan-keuangan-59ffe.firebaseapp.com",
-    projectId: "catatan-keuangan-59ffe",
-    storageBucket: "catatan-keuangan-59ffe.firebasestorage.app",
-    messagingSenderId: "802299331987",
-    appId: "1:802299331987:web:27e2ef6fb1d621ee0d9466",
-    measurementId: "G-G699EJBGSB"
+  apiKey: "AIzaSyDM3ML_qv6WSOwId_e5IwQGRezsJkGOVYs",
+  authDomain: "catatan-keuangan-59ffe.firebaseapp.com",
+  projectId: "catatan-keuangan-59ffe",
+  storageBucket: "catatan-keuangan-59ffe.firebasestorage.app",
+  messagingSenderId: "802299331987",
+  appId: "1:802299331987:web:27e2ef6fb1d621ee0d9466",
+  measurementId: "G-G699EJBGSB"
 };
 
 // Inisialisasi Firebase
