@@ -44,6 +44,28 @@ auth.onAuthStateChanged(user => {
     }, 1000);
 });
 
+async function setupRealTimeListener() {
+    try {
+        unsubscribeTransactions = db.collection('users')
+            .doc(auth.currentUser.uid)
+            .collection('transactions')
+            .orderBy('date', 'desc')
+            .onSnapshot(snapshot => {
+                transactions = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data(),
+                    date: doc.data().date.toDate()
+                }));
+                updateAll();
+            }, error => {
+                console.error('Error listening to realtime updates:', error);
+                alert('Gagal memuat data transaksi');
+            });
+    } catch (error) {
+        console.error('Error setting up listener:', error);
+    }
+}
+
 // ================= AUTHENTICATION =================
 function showAuthUI() {
     const authContainer = document.getElementById('authContainer');
@@ -314,6 +336,13 @@ function toggleTheme() {
 // Event Listeners
 document.getElementById('transactionForm').addEventListener('submit', async e => {
     e.preventDefault();
+
+      // Validasi input
+    const amount = parseFloat(document.getElementById('transactionAmount').value);
+    if (isNaN(amount) || amount <= 0) {
+        alert('Jumlah transaksi harus lebih dari 0');
+        return;
+    }
     
     const transaction = {
         id: currentEditId,
