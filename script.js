@@ -99,7 +99,7 @@ function showAuthUI() {
         <form class="auth-form" onsubmit="return false;">
             <input type="email" id="authEmail" placeholder="Email" required>
             <input type="password" id="authPassword" placeholder="Password" required>
-            <button type="submit" onclick="handleAuth()">ᯓ ✈︎ Masuk</button>
+            <button type="submit" onclick="handleAuth()">Masuk</button>
             <button type="button" onclick="handleGoogleAuth()">Masuk dengan Google</button>
             <button type="button" onclick="showResetPassword()">Lupa Password?</button>
             <div id="authError" class="auth-error"></div>
