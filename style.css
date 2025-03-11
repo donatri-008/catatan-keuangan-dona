@@ -206,7 +206,7 @@ body {
 }
 
 .chart-card canvas {
-    max-height: 300px;
+    max-height: 250px;
     margin: 15px 0;
 
 }
