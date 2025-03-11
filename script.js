@@ -20,6 +20,30 @@ let financeChart = null;
 let currentFilter = null;
 let unsubscribeTransactions = null;
 
+// Initialize App
+auth.onAuthStateChanged(user => {
+    const loading = document.getElementById('loading');
+    const authContainer = document.getElementById('authContainer');
+    const appContent = document.getElementById('appContent');
+
+    loading.style.display = 'flex';
+
+    setTimeout(() => {
+        if (user) {
+            // Jika user sudah login
+            authContainer.style.display = 'none';
+            appContent.style.display = 'block';
+            setupRealTimeListener();
+        } else {
+            // Jika user belum login
+            authContainer.style.display = 'block';
+            appContent.style.display = 'none';
+            showAuthUI();
+        }
+        loading.style.display = 'none';
+    }, 1000);
+});
+
 // ================= AUTHENTICATION =================
 function showAuthUI() {
     const authContainer = document.getElementById('authContainer');
@@ -34,20 +58,6 @@ function showAuthUI() {
             <div id="authError" class="auth-error"></div>
         </form>
     `;
-}
-
-function logout() {
-    auth.signOut().then(() => {
-        // Reset semua state
-        transactions = [];
-        currentEditId = null;
-        if (unsubscribeTransactions) unsubscribeTransactions();
-        
-        // Tampilkan pesan logout
-        alert('Anda telah berhasil logout!');
-    }).catch(error => {
-        alert('Error saat logout: ' + error.message);
-    });
 }
 
 async function handleAuth() {
@@ -89,10 +99,17 @@ function showResetPassword() {
 }
 
 function logout() {
-    auth.signOut();
-    if (unsubscribeTransactions) unsubscribeTransactions();
-    document.getElementById('authContainer').classList.add('active');
-    document.getElementById('dashboard').style.display = 'none';
+    auth.signOut().then(() => {
+        // Reset semua state
+        transactions = [];
+        currentEditId = null;
+        if (unsubscribeTransactions) unsubscribeTransactions();
+        
+        // Tampilkan pesan logout
+        alert('Anda telah berhasil logout!');
+    }).catch(error => {
+        alert('Error saat logout: ' + error.message);
+    });
 }
 
 // ================= CORE FUNCTIONALITY =================
@@ -309,30 +326,6 @@ document.getElementById('transactionForm').addEventListener('submit', async e =>
 
     await saveTransaction(transaction);
     cancelEdit();
-});
-
-// Initialize App
-auth.onAuthStateChanged(user => {
-    const loading = document.getElementById('loading');
-    const authContainer = document.getElementById('authContainer');
-    const appContent = document.getElementById('appContent');
-
-    loading.style.display = 'flex';
-
-    setTimeout(() => {
-        if (user) {
-            // Jika user sudah login
-            authContainer.style.display = 'none';
-            appContent.style.display = 'block';
-            setupRealTimeListener();
-        } else {
-            // Jika user belum login
-            authContainer.style.display = 'block';
-            appContent.style.display = 'none';
-            showAuthUI();
-        }
-        loading.style.display = 'none';
-    }, 1000);
 });
 
 document.addEventListener('DOMContentLoaded', () => {
