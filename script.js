@@ -153,11 +153,16 @@ async function handleSignUp() {
     });
 
     // Auto-login setelah berhasil sign up
-    showNotification("🎉 Pendaftaran berhasil! Anda akan diarahkan...");
+    showNotification("🎉 Pendaftaran berhasil! Silakan login dengan akun Anda.");
     
-    // Redirect ke dashboard setelah 2 detik
-    setTimeout(() => {
-      window.location.reload(); // Refresh untuk update UI login
+    setTimeout(async () => {
+      await auth.signOut();
+      showLogin();
+
+      // Clear form
+      document.getElementById('signupUsername').value = '';
+      document.getElementById('signupEmail').value = '';
+      document.getElementById('signupPassword').value = '';
     }, 2000);
 
   } catch (error) {
@@ -247,9 +252,7 @@ function showAuthUI() {
             <span class="btn-text">Daftar</span>
             <span class="btn-loader">⌛</span>
           </button>
-          <button type="button" class="textlink" onclick="showLogin()">
-            ← Kembali ke Login
-          </button>
+          <a href="#" class="text-link" onclick="showLogin()"> ← Kembali ke Login</a>
         </div>
         <div id="signupError" class="auth-error"></div>
       </form>
