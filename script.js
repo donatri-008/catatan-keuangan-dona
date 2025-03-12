@@ -107,20 +107,61 @@ function showSignUp() {
 }
 
 // Fungsi handle login
-async function handleLogin() {
+// Fungsi handle login yang diperbaiki
+async function handleLogin(event) {
+  event.preventDefault();
   const email = document.getElementById('loginEmail').value;
   const password = document.getElementById('loginPassword').value;
   const authError = document.getElementById('authError');
+  const loginButton = document.querySelector('#loginCard button[type="submit"]');
 
   try {
-    const userCredential = await auth.signInWithEmailAndPassword(email, password);
-    console.log("Login berhasil:", userCredential.user);
+    // Tampilkan loading state
+    loginButton.disabled = true;
+    loginButton.innerHTML = '⌛ Memproses...';
 
-    // Redirect atau refresh agar onAuthStateChanged mendeteksi perubahan
-    window.location.reload();
+    // Login dengan email dan password
+    await auth.signInWithEmailAndPassword(email, password);
+    
+    // Tampilkan notifikasi sukses
+    showNotification("🎉 Login berhasil! Mengarahkan ke dashboard...");
+    
+    // Perbarui UI setelah 1 detik
+    setTimeout(() => {
+      window.location.reload(); // Refresh untuk memastikan semua state terupdate
+    }, 1000);
+
   } catch (error) {
-    console.error("Error saat login:", error.message);
-    authError.textContent = "Email atau password salah!";
+    // Handle error spesifik
+    let errorMessage = 'Terjadi kesalahan saat login';
+    
+    switch (error.code) {
+      case 'auth/user-not-found':
+        errorMessage = 'Email tidak terdaftar';
+        break;
+      case 'auth/wrong-password':
+        errorMessage = 'Password salah';
+        break;
+      case 'auth/too-many-requests':
+        errorMessage = 'Terlalu banyak percobaan gagal. Coba lagi nanti';
+        break;
+      default:
+        errorMessage = error.message || errorMessage;
+    }
+    
+    authError.textContent = errorMessage;
+    authError.style.display = 'block';
+    
+    // Animasi shake untuk error
+    authError.parentElement.classList.add('shake');
+    setTimeout(() => {
+      authError.parentElement.classList.remove('shake');
+    }, 500);
+
+  } finally {
+    // Reset UI state
+    loginButton.disabled = false;
+    loginButton.innerHTML = 'Masuk';
   }
 }
 
