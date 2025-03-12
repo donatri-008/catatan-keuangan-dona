@@ -324,12 +324,7 @@ function renderTransactions() {
     const container = document.getElementById('transactions');
     container.innerHTML = '';
 
-    const filteredTransactions = currentFilter ? transactions.filter(t => 
-        new Date(t.date) >= new Date(currentFilter.start) && 
-        new Date(t.date) <= new Date(currentFilter.end)
-    ) : transactions;
-
-    filteredTransactions.forEach(transaction => {
+    transactions.forEach(transaction => {
         const div = document.createElement('div');
         div.className = 'transaction-item';
         div.innerHTML = `
@@ -378,23 +373,32 @@ function getCategoryIcon(category) {
 
 function editTransaction(id) {
     const transaction = transactions.find(t => t.id === id);
-    console.log("Transaction to edit:", transaction); // Debugging
-
+    
     if (transaction) {
-        currentEditId = id;
-        const transactionDate = new Date(transaction.date);
-        const formattedDate = transactionDate.toISOString().split('T')[0];
-        document.getElementById('transactionName').value = transaction.name;
-        document.getElementById('transactionAmount').value = transaction.amount;
-        document.getElementById('transactionDate').value = formattedDate;
-        document.getElementById('transactionCategory').value = transaction.category;
-        document.getElementById('transactionType').value = transaction.type;
-        document.getElementById('submitButton').textContent = '💾 Simpan Perubahan';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-
-        showNotification("✏️ Edit transaksi siap dilakukan!", "info");
+        Swal.fire({
+            title: 'Edit Transaksi',
+            text: 'Apakah Anda ingin mengedit transaksi ini?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Edit',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                currentEditId = id;
+                const transactionDate = new Date(transaction.date);
+                const formattedDate = transactionDate.toISOString().split('T')[0];
+                document.getElementById('formSection').style.display = 'block';
+                document.getElementById('transactionName').value = transaction.name;
+                document.getElementById('transactionAmount').value = transaction.amount;
+                document.getElementById('transactionDate').value = formattedDate;
+                document.getElementById('transactionCategory').value = transaction.category;
+                document.getElementById('transactionType').value = transaction.type;
+                document.getElementById('submitButton').textContent = '💾 Simpan Perubahan';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                showNotification("✏️ Edit transaksi dilakukan", "success");
+            }
+        });
     } else {
-        console.error("Transaksi tidak ditemukan:", id);
         showNotification("❌ Transaksi tidak ditemukan!", "error");
     }
 }
