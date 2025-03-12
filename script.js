@@ -117,9 +117,14 @@ async function handleLogin() {
   const authError = document.getElementById('authError');
 
   try {
-    await auth.signInWithEmailAndPassword(email, password);
+    const userCredential = await auth.signInWithEmailAndPassword(email, password);
+    console.log("Login berhasil:", userCredential.user);
+
+    // Redirect atau refresh agar onAuthStateChanged mendeteksi perubahan
+    window.location.reload();
   } catch (error) {
-    authError.textContent = error.message;
+    console.error("Error saat login:", error.message);
+    authError.textContent = "Email atau password salah!";
   }
 }
 
