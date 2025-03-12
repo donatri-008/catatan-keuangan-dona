@@ -353,20 +353,14 @@ async function handleGoogleAuth() {
     if (methods.includes('password')) {
       showNotification("Akun ini sudah memiliki metode login email & password.");
     } else {
-      // Jika akun belum ada metode email/password, buat dan tautkan
-      const password = prompt("Buat password baru untuk akun ini:");
-      if (password && password.length >= 6) {
-        const emailCredential = firebase.auth.EmailAuthProvider.credential(user.email, password);
-        await user.linkWithCredential(emailCredential);
-        showNotification("Akun Google berhasil ditautkan dengan email & password!");
-      }
+      showNotification("🎉 Login dengan Google berhasil!");
     }
 
     setTimeout(() => window.location.reload(), 1000);
 
   } catch (error) {
     let errorMessage = 'Terjadi kesalahan saat login dengan Google';
-    
+
     if (error.code === 'auth/account-exists-with-different-credential') {
       errorMessage = 'Akun ini sudah terdaftar dengan metode login lain. Silakan gunakan metode tersebut.';
     }
