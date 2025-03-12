@@ -292,6 +292,10 @@ button:hover {
     color: white;
 }
 
+.authContainer {
+  margin-top: 15px;
+}
+
 .auth-switch {
   text-align: center;
   margin-top: 15px;
@@ -306,6 +310,10 @@ button:hover {
 
 .auth-switch a:hover {
   text-decoration: underline;
+}
+
+.loginCard h2 {
+  margin-bottom: 5px;
 }
 
 .auth-card {
