@@ -462,8 +462,8 @@ button:hover {
     }
 
     .theme-switch button {
-        padding: 6px 10px;
-        font-size: 12px;
+        padding: 6px 6px;
+        font-size: 14px;
         min-width: 60px;
     }
 
