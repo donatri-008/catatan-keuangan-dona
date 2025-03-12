@@ -107,13 +107,19 @@ function showSignUp() {
 }
 
 // Fungsi handle login
-// Fungsi handle login yang diperbaiki
 async function handleLogin(event) {
   event.preventDefault();
-  const email = document.getElementById('loginEmail').value;
-  const password = document.getElementById('loginPassword').value;
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value.trim();
   const authError = document.getElementById('authError');
   const loginButton = document.querySelector('#loginCard button[type="submit"]');
+
+  // Validasi input tidak boleh kosong
+  if (!email || !password) {
+    authError.textContent = "Email dan password tidak boleh kosong";
+    authError.style.display = 'block';
+    return;
+  }
 
   try {
     // Tampilkan loading state
@@ -121,37 +127,43 @@ async function handleLogin(event) {
     loginButton.innerHTML = '⌛ Memproses...';
 
     // Login dengan email dan password
-    await auth.signInWithEmailAndPassword(email, password);
-    
+    const userCredential = await auth.signInWithEmailAndPassword(email, password);
+    console.log("Login berhasil:", userCredential.user);
+
+    // Simpan data pengguna di localStorage (opsional)
+    localStorage.setItem("user", JSON.stringify(userCredential.user));
+
     // Tampilkan notifikasi sukses
     showNotification("🎉 Login berhasil! Mengarahkan ke dashboard...");
-    
-    // Perbarui UI setelah 1 detik
+
+    // Redirect ke halaman utama setelah login
     setTimeout(() => {
-      window.location.reload(); // Refresh untuk memastikan semua state terupdate
+      window.location.reload(); 
     }, 1000);
 
   } catch (error) {
-    // Handle error spesifik
     let errorMessage = 'Terjadi kesalahan saat login';
     
     switch (error.code) {
       case 'auth/user-not-found':
-        errorMessage = 'Email tidak terdaftar';
+        errorMessage = 'Email tidak terdaftar. Silakan daftar terlebih dahulu.';
         break;
       case 'auth/wrong-password':
-        errorMessage = 'Password salah';
+        errorMessage = 'Password salah. Coba lagi.';
         break;
       case 'auth/too-many-requests':
-        errorMessage = 'Terlalu banyak percobaan gagal. Coba lagi nanti';
+        errorMessage = 'Terlalu banyak percobaan gagal. Silakan coba lagi nanti.';
+        break;
+      case 'auth/invalid-email':
+        errorMessage = 'Format email tidak valid.';
         break;
       default:
         errorMessage = error.message || errorMessage;
     }
-    
+
     authError.textContent = errorMessage;
     authError.style.display = 'block';
-    
+
     // Animasi shake untuk error
     authError.parentElement.classList.add('shake');
     setTimeout(() => {
