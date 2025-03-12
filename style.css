@@ -324,7 +324,7 @@ button:hover {
 
 .forgot-password {
   text-align: right;
-  margin: -10px 0 15px 0;
+  margin: -10px 0 5px 0;
 }
 
 .separator {
@@ -394,7 +394,7 @@ button:hover {
 }
 
 .form-footer {
-  margin: 15px 0;
+  margin-top: 0;
 }
 
 .auth-providers {
