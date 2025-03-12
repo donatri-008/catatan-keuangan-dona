@@ -203,19 +203,30 @@ function showAuthUI() {
       <form class="auth-form" onsubmit="return handleLogin(event)">
         <input type="email" id="loginEmail" placeholder="Email" required>
         <input type="password" id="loginPassword" placeholder="Password" required>
-        <button type="button" class="text-link" onclick="showResetPassword()">Lupa Password?</button>
+
+        <div class="forgot-password">
+          <button type="button" class="text-link" onclick="showResetPassword()">Lupa Password?</button>
+        </div>
+    
         <div class="form-footer">
           <button type="submit" class="auth-btn primary">
             <span class="btn-text">Masuk</span>
             <span class="btn-loader">⌛</span>
           </button>
+    
+          <div class="separator">
+            <span class="line"></span>
+            <span class="text">Masuk menggunakan</span>
+            <span class="line"></span>
+          </div>
+    
           <div class="auth-providers">
-            <p>Atau masuk menggunakan</p>
             <button type="button" class="google-btn" onclick="handleGoogleAuth()">
               <img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="Google">
               Google
             </button>
           </div>
+    
           <div class="auth-switch">
             Belum punya akun? 
             <a href="#" class="text-link" onclick="showSignUp()">Daftar di sini</a>
