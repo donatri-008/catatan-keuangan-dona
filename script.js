@@ -448,42 +448,49 @@ function cancelEdit() {
 function filterTransactions() {
     const start = document.getElementById('startDate').value;
     const end = document.getElementById('endDate').value;
-    let totalBalance = 0;
+    const transactions = document.querySelectorAll('.transaction');
 
-    if (start && end) {
-        currentFilter = { start, end };
-    } else {
-        currentFilter = null;
+    if (!start || !end) {
+        alert("Pilih rentang tanggal terlebih dahulu!");
+        return;
     }
 
-    document.querySelectorAll('.transaction').forEach(transaction => {
-        const date = transaction.getAttribute('data-date');
-        const amount = parseFloat(transaction.getAttribute('data-amount'));
-        const type = transaction.getAttribute('data-type');
+    const startDate = new Date(start);
+    const endDate = new Date(end);
 
-        if (!currentFilter || (date >= start && date <= end)) {
-            transaction.style.display = 'table-row';
-            totalBalance += amount;
+    let totalSaldo = 0;
+
+    transactions.forEach(transaction => {
+        const transactionDate = new Date(transaction.getAttribute('data-date'));
+        const amount = parseFloat(transaction.getAttribute('data-amount'));
+
+        if (transactionDate >= startDate && transactionDate <= endDate) {
+            transaction.style.display = "";
+            totalSaldo += amount;
         } else {
-            transaction.style.display = 'none';
+            transaction.style.display = "none";
         }
     });
 
-    document.getElementById('saldo').textContent = `Saldo: Rp${totalBalance.toLocaleString('id-ID')}`;
+    document.getElementById('saldo').textContent = `Saldo: Rp${totalSaldo.toLocaleString('id-ID')}`;
 }
 
 function clearFilter() {
     document.getElementById('startDate').value = '';
     document.getElementById('endDate').value = '';
-    currentFilter = null;
     
-    let totalBalance = 0;
-    document.querySelectorAll('.transaction').forEach(transaction => {
-        transaction.style.display = 'table-row';
-        totalBalance += parseFloat(transaction.getAttribute('data-amount'));
+    const transactions = document.querySelectorAll('.transaction');
+    transactions.forEach(transaction => {
+        transaction.style.display = "";
     });
 
-    document.getElementById('saldo').textContent = `Saldo: Rp${totalBalance.toLocaleString('id-ID')}`;
+    // Menghitung ulang saldo setelah reset
+    let totalSaldo = 0;
+    transactions.forEach(transaction => {
+        totalSaldo += parseFloat(transaction.getAttribute('data-amount'));
+    });
+
+    document.getElementById('saldo').textContent = `Saldo: Rp${totalSaldo.toLocaleString('id-ID')}`;
 }
 
 function toggleTheme() {
