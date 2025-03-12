@@ -62,6 +62,44 @@ auth.onAuthStateChanged(user => {
     }, 500);
 });
 
+// Fungsi untuk menautkan akun email/password dengan Google
+async function linkGoogleToEmailPassword() {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    try {
+        const email = user.email;
+        const password = prompt("Buat password baru untuk login manual:");
+
+        if (!password) {
+            alert("Password tidak boleh kosong!");
+            return;
+        }
+
+        const credential = firebase.auth.EmailAuthProvider.credential(email, password);
+        await user.linkWithCredential(credential);
+        alert("Akun berhasil ditautkan! Sekarang bisa login manual juga.");
+    } catch (error) {
+        console.error("Error linking account:", error.message);
+        alert("Gagal menautkan akun: " + error.message);
+    }
+}
+
+// Fungsi untuk menautkan akun email/password dengan Google
+async function linkEmailPasswordToGoogle() {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const provider = new firebase.auth.GoogleAuthProvider();
+    try {
+        await user.linkWithPopup(provider);
+        alert("Akun berhasil ditautkan ke Google!");
+    } catch (error) {
+        console.error("Error linking:", error.message);
+        alert("Gagal menautkan akun: " + error.message);
+    }
+}
+
 function showAppContent() {
     const appContent = document.getElementById("appContent");
     const authContainer = document.getElementById("authContainer");
@@ -286,6 +324,8 @@ function showAuthUI() {
         </div>
         <div id="authError" class="auth-error"></div>
       </form>
+      <button onclick="linkGoogleToEmailPassword()">Tautkan ke Google</button>
+      <button onclick="linkEmailPasswordToGoogle()">Tautkan ke Email & Password</button>
     </div>
 
     <div class="auth-card" id="signupCard">
