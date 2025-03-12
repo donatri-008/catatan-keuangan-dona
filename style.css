@@ -325,6 +325,10 @@ button:hover {
 .forgot-password {
   text-align: right;
   margin: -10px 0 5px 0;
+}
+
+.text-link {
+  text-align: right;
   background: none;
   color: var(--primary);
   text-decoration: underline;
