@@ -35,7 +35,6 @@ auth.onAuthStateChanged(user => {
 
     setTimeout(() => {
         if (user) {
-            // Jika sudah login, tampilkan elemen yang diperlukan
             authContainer.style.display = "none";
             appContent.style.display = "block";
             logoutButton.style.display = "inline-block";
@@ -43,10 +42,8 @@ auth.onAuthStateChanged(user => {
             filterSection.style.display = "block";
             transactionHistory.style.display = "block";
 
-            // Aktifkan listener Firestore
             setupRealTimeListener();
         } else {
-            // Jika belum login, sembunyikan semua elemen aplikasi
             authContainer.style.display = "block";
             appContent.style.display = "none";
             logoutButton.style.display = "none";
@@ -54,7 +51,6 @@ auth.onAuthStateChanged(user => {
             filterSection.style.display = "none";
             transactionHistory.style.display = "none";
 
-            // Hentikan listener jika ada
             if (unsubscribeTransactions) {
                 unsubscribeTransactions();
                 unsubscribeTransactions = null;
