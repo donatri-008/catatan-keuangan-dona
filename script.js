@@ -208,13 +208,14 @@ function showAuthUI() {
             <span class="btn-text">Masuk</span>
             <span class="btn-loader">⌛</span>
           </button>
+          <button type="button" class="text-link" onclick="showResetPassword()">Lupa Password?</button>
           <div class="auth-providers">
+            <h2>Atau masuk menggunakan</h2>
             <button type="button" class="google-btn" onclick="handleGoogleAuth()">
               <img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="Google">
               Google
             </button>
           </div>
-          <button type="button" class="text-link" onclick="showResetPassword()">Lupa Password?</button>
           <div class="auth-switch">
             Belum punya akun? 
             <a href="#" class="text-link" onclick="showSignUp()">Daftar di sini</a>
