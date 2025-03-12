@@ -445,12 +445,18 @@ function cancelEdit() {
     showNotification("Edit transaksi dibatalkan!", "error");
 }
 
+let transactions = []; // Array asli transaksi
+let currentFilter = null; // Variabel penyimpan filter
+
 function filterTransactions() {
     const start = document.getElementById('startDate').value;
     const end = document.getElementById('endDate').value;
     
     if (start && end) {
-        currentFilter = { start, end };
+        currentFilter = { 
+            start: new Date(start),
+            end: new Date(end + 'T23:59:59') // Sampai akhir hari
+        };
     } else {
         currentFilter = null;
     }
@@ -463,6 +469,33 @@ function clearFilter() {
     document.getElementById('endDate').value = '';
     currentFilter = null;
     updateAll();
+}
+
+function updateAll() {
+    // Filter transaksi berdasarkan tanggal
+    const filteredTransactions = currentFilter
+        ? transactions.filter(transaction => {
+            const transDate = new Date(transaction.date);
+            return transDate >= currentFilter.start && 
+                   transDate <= currentFilter.end;
+        })
+        : transactions;
+
+    // Update saldo
+    const totalBalance = filteredTransactions.reduce(
+        (sum, transaction) => sum + transaction.amount, 0
+    );
+    document.getElementById('balance').textContent = totalBalance;
+
+    // Update daftar transaksi
+    const transactionList = document.getElementById('transactionList');
+    transactionList.innerHTML = ''; // Kosongkan list
+    
+    filteredTransactions.forEach(transaction => {
+        const li = document.createElement('li');
+        li.textContent = `${transaction.date}: ${transaction.amount}`;
+        transactionList.appendChild(li);
+    });
 }
 
 function toggleTheme() {
