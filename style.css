@@ -325,6 +325,10 @@ button:hover {
 .forgot-password {
   text-align: right;
   margin: -10px 0 5px 0;
+  background: none;
+  color: var(--primary);
+  text-decoration: underline;
+  padding: 0;
 }
 
 .separator {
@@ -386,15 +390,8 @@ button:hover {
   height: 18px;
 }
 
-.text-link {
-  background: none;
-  color: var(--primary);
-  text-decoration: underline;
-  padding: 0;
-}
-
 .form-footer {
-  margin-top: 0;
+  margin-top: -10px;
 }
 
 .auth-providers {
