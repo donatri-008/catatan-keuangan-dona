@@ -310,11 +310,11 @@ button:hover {
 
 .auth-card {
   display: none;
+  width: 100%;
   max-width: 400px;
-  margin: 0 auto;
+  margin: 20 auto;
+  padding: 20px;
   background: var(--card-bg);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
 }
 
 .auth-card.active {
