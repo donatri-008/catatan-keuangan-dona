@@ -19,6 +19,7 @@ let currentEditId = null;
 let financeChart = null;
 let currentFilter = null;
 let unsubscribeTransactions = null;
+let unsubscribe = null;
 
 // Initialize App
 auth.onAuthStateChanged(user => {
@@ -42,7 +43,8 @@ auth.onAuthStateChanged(user => {
             filterSection.style.display = "block";
             transactionHistory.style.display = "block";
 
-            setupRealTimeListener();
+            // Aktifkan listener Firestore
+            unsubscribe = setupRealTimeListener();
         } else {
             // Jika belum login, sembunyikan semua elemen aplikasi
             authContainer.style.display = "block";
@@ -51,6 +53,12 @@ auth.onAuthStateChanged(user => {
             formSection.style.display = "none";
             filterSection.style.display = "none";
             transactionHistory.style.display = "none";
+
+            // Hentikan listener jika ada
+            if (unsubscribe) {
+                unsubscribe();
+                unsubscribe = null;
+            }
 
             showAuthUI();
         }
