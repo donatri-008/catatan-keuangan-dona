@@ -345,7 +345,6 @@ function renderTransactions() {
         `;
         container.appendChild(div);
     });
-}
 
     // Tambahkan event listener untuk tombol Edit dan Hapus dengan event delegation
     container.addEventListener("click", function(event) {
