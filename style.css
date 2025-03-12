@@ -322,6 +322,56 @@ button:hover {
   display: block;
 }
 
+/* Animasi Shake */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.shake {
+  animation: shake 0.3s ease-in-out;
+}
+
+/* Loading State */
+.auth-btn .btn-loader {
+  display: none;
+}
+
+.auth-btn.loading .btn-text {
+  display: none;
+}
+
+.auth-btn.loading .btn-loader {
+  display: inline-block;
+  animation: spin 1s linear infinite;
+}
+
+/* Google Button */
+.google-btn {
+  background: #4285f4 !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.google-btn img {
+  width: 18px;
+  height: 18px;
+}
+
+.text-link {
+  background: none;
+  color: var(--primary);
+  text-decoration: underline;
+  padding: 0;
+}
+
+.auth-providers {
+  margin: 15px 0;
+  text-align: center;
+}
+
 .auth-form {
     display: flex;
     flex-direction: column;
