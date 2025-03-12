@@ -293,7 +293,8 @@ button:hover {
 }
 
 .authContainer {
-  margin-top: 15px;
+  margin-top: -15px;
+  margin-bottom: 15px
 }
 
 .auth-switch {
@@ -314,6 +315,7 @@ button:hover {
 
 .loginCard h2 {
   margin-bottom: 5px;
+  padding: 15px 0;
 }
 
 .auth-card {
