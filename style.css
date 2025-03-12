@@ -451,8 +451,13 @@ button:hover {
         padding: 10px;
     }
 
+    .auth-container {
+        width: 90%;
+        padding: 15px;
+    }
+
     .header h1 {
-        font-size: 1.8em;
+        font-size: 2em;
         margin-top: 40px;
     }
 
@@ -473,7 +478,7 @@ button:hover {
     }
 
     .dashboard {
-        gap: 15px;
+        gap: 10px;
         margin-bottom: 15px;
     }
 
@@ -504,10 +509,10 @@ button:hover {
     }
 
     .transaction-item {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 12px;
-        gap: 8px;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 5px;
     }
 
     .transaction-item > div {
