@@ -248,7 +248,7 @@ async function handleSignUp() {
       lastLogin: null
     });
 
-    showNotification("🎉 Pendaftaran berhasil! Silakan login dengan akun Anda.");
+    showNotification("🎉 Pendaftaran berhasil!");
 
     setTimeout(() => {
       showLogin(); // Langsung menuju halaman login
