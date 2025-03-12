@@ -421,8 +421,17 @@ function editTransaction(id) {
 
             // Scroll ke formSection setelah elemen ditampilkan
             setTimeout(() => {
-                formSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                console.log("Scrolling ke formSection...");
+                if (window.innerWidth <= 768) {
+                    // Untuk HP, gunakan window.scrollTo
+                    window.scrollTo({
+                        top: formSection.offsetTop - 20,
+                        behavior: 'smooth'
+                    });
+                } else {
+                    // Untuk desktop, gunakan scrollIntoView
+                    formSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+                console.log("Scrolling ke formSection...", formSection.offsetTop);
             }, 300);
         }
     });
