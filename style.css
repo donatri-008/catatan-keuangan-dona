@@ -292,14 +292,34 @@ button:hover {
     color: white;
 }
 
+.auth-switch {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 0.9em;
+}
+
+.auth-switch a {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.auth-switch a:hover {
+  text-decoration: underline;
+}
+
 .auth-card {
-    max-width: 400px;
-    margin: 20px auto;
-    display: none;
+  display: none;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 30px;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
 }
 
 .auth-card.active {
-    display: block;
+  display: block;
 }
 
 .auth-form {
