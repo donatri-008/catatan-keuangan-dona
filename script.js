@@ -448,49 +448,21 @@ function cancelEdit() {
 function filterTransactions() {
     const start = document.getElementById('startDate').value;
     const end = document.getElementById('endDate').value;
-    const transactions = document.querySelectorAll('.transaction');
-
-    if (!start || !end) {
-        alert("Pilih rentang tanggal terlebih dahulu!");
-        return;
+    
+    if (start && end) {
+        currentFilter = { start, end };
+    } else {
+        currentFilter = null;
     }
-
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-
-    let totalSaldo = 0;
-
-    transactions.forEach(transaction => {
-        const transactionDate = new Date(transaction.getAttribute('date'));
-        const amount = parseFloat(transaction.getAttribute('data-amount'));
-
-        if (transactionDate >= startDate && transactionDate <= endDate) {
-            transaction.style.display = "";
-            totalSaldo += amount;
-        } else {
-            transaction.style.display = "none";
-        }
-    });
-
-    document.getElementById('saldo').textContent = `Saldo: Rp${totalSaldo.toLocaleString('id-ID')}`;
+    
+    updateAll();
 }
 
 function clearFilter() {
     document.getElementById('startDate').value = '';
     document.getElementById('endDate').value = '';
-    
-    const transactions = document.querySelectorAll('.transaction');
-    transactions.forEach(transaction => {
-        transaction.style.display = "";
-    });
-
-    // Menghitung ulang saldo setelah reset
-    let totalSaldo = 0;
-    transactions.forEach(transaction => {
-        totalSaldo += parseFloat(transaction.getAttribute('data-amount'));
-    });
-
-    document.getElementById('saldo').textContent = `Saldo: Rp${totalSaldo.toLocaleString('id-ID')}`;
+    currentFilter = null;
+    updateAll();
 }
 
 function toggleTheme() {
