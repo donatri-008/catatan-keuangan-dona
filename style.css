@@ -393,6 +393,10 @@ button:hover {
   padding: 0;
 }
 
+.form-footer {
+  margin: 15px 0;
+}
+
 .auth-providers {
   margin: 15px 0;
   text-align: center;
