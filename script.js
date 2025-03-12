@@ -445,9 +445,6 @@ function cancelEdit() {
     showNotification("Edit transaksi dibatalkan!", "error");
 }
 
-let transactions = []; // Array asli transaksi
-let currentFilter = null; // Variabel penyimpan filter
-
 function filterTransactions() {
     const start = document.getElementById('startDate').value;
     const end = document.getElementById('endDate').value;
