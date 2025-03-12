@@ -461,7 +461,7 @@ function filterTransactions() {
     let totalSaldo = 0;
 
     transactions.forEach(transaction => {
-        const transactionDate = new Date(transaction.getAttribute('data-date'));
+        const transactionDate = new Date(transaction.getAttribute('date'));
         const amount = parseFloat(transaction.getAttribute('data-amount'));
 
         if (transactionDate >= startDate && transactionDate <= endDate) {
