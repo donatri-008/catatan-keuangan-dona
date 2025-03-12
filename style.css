@@ -84,7 +84,7 @@ body {
 }
 
 .hidden {
-    display: none !important;
+    display: none;
 }
 
 .swal2-confirm {
