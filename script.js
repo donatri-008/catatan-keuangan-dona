@@ -405,8 +405,6 @@ function editTransaction(id) {
                 setTimeout(() => {
                     formSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }, 100);
-
-                showNotification("✏️ Edit transaksi dilakukan", "success");
             }
         });
     } else {
