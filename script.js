@@ -18,8 +18,8 @@ let transactions = [];
 let currentEditId = null;
 let financeChart = null;
 let currentFilter = null;
-let unsubscribeTransactions = null;
 let unsubscribe = null;
+let unsubscribeTransactions = null;
 
 // Initialize App
 auth.onAuthStateChanged(user => {
@@ -44,7 +44,7 @@ auth.onAuthStateChanged(user => {
             transactionHistory.style.display = "block";
 
             // Aktifkan listener Firestore
-            unsubscribe = setupRealTimeListener();
+            setupRealTimeListener();
         } else {
             // Jika belum login, sembunyikan semua elemen aplikasi
             authContainer.style.display = "block";
@@ -55,9 +55,9 @@ auth.onAuthStateChanged(user => {
             transactionHistory.style.display = "none";
 
             // Hentikan listener jika ada
-            if (unsubscribe) {
-                unsubscribe();
-                unsubscribe = null;
+            if (unsubscribeTransactions) {
+                unsubscribeTransactions();
+                unsubscribeTransactions = null;
             }
 
             showAuthUI();
@@ -346,11 +346,15 @@ function initChart() {
     });
 }
 
-async function setupRealTimeListener() {
+function setupRealTimeListener() {
     try {
-        if (typeof unsubscribeTransactions === "function") {
+        // Hentikan listener lama jika ada
+        if (unsubscribeTransactions) {
             unsubscribeTransactions();
+            unsubscribeTransactions = null;
         }
+
+        if (!auth.currentUser) return; // Cegah akses uid saat logout
 
         unsubscribeTransactions = db.collection('users')
             .doc(auth.currentUser.uid)
@@ -373,7 +377,11 @@ async function setupRealTimeListener() {
                 updateAll();
             }, error => {
                 console.error("Error listener:", error);
-                showNotification("Gagal memuat data realtime", "error");
+
+                if (auth.currentUser) { // Hanya tampilkan error jika user masih login
+                    showNotification("Gagal memuat data realtime", "error");
+                }
+
                 transactions = [];
                 updateAll();
             });
