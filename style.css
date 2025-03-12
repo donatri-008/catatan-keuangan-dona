@@ -322,6 +322,30 @@ button:hover {
   display: block;
 }
 
+.forgot-password {
+  text-align: right;
+  margin: -10px 0 15px 0;
+}
+
+.separator {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #666;
+  margin: 20px 0;
+}
+
+.separator .line {
+  flex: 1;
+  height: 1px;
+  background-color: #ddd;
+}
+
+.separator .text {
+  font-size: 0.9em;
+  color: var(--text);
+}
+
 /* Animasi Shake */
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
@@ -353,6 +377,8 @@ button:hover {
   display: flex;
   align-items: center;
   gap: 8px;
+  width: 100%;
+  justify-content: center;
 }
 
 .google-btn img {
@@ -370,6 +396,7 @@ button:hover {
 .auth-providers {
   margin: 15px 0;
   text-align: center;
+  width: 100%;
 }
 
 .auth-form {
