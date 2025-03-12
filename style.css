@@ -456,9 +456,14 @@ button:hover {
         margin-top: 40px;
     }
 
+    .logout-btn {
+        width: 100%;
+        margin-top: 10px;
+    }
+
     .theme-switch {
-        top: 15px;
-        right: 7px;
+        top: 10px;
+        right: 5px;
     }
 
     .theme-switch button {
@@ -473,7 +478,7 @@ button:hover {
     }
 
     .balance-card h2 {
-        font-size: 25px
+        font-size: 25px;
     }
 
     .balance-amount {
