@@ -64,7 +64,7 @@ body {
 .auth-container {
     display: none;
     max-width: 400px;
-    margin: 20px auto;
+    margin: 10px auto;
     padding: 30px;
     background: var(--card-bg);
     border-radius: var(--radius);
@@ -314,7 +314,7 @@ button:hover {
 }
 
 .auth-card h2 {
-  font-size: 1.5em;
+  font-size: 15px;
   margin-bottom: 15px;
   color: var(--primary);
 }
