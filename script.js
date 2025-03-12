@@ -465,6 +465,38 @@ function clearFilter() {
     updateAll();
 }
 
+function updateAll() {
+    const filteredTransactions = getFilteredTransactions();
+    displayTransactions(filteredTransactions);
+    updateBalance(filteredTransactions);
+}
+
+function getFilteredTransactions() {
+    if (!currentFilter) {
+        return transactions; // Jika tidak ada filter, kembalikan semua transaksi
+    }
+
+    const { start, end } = currentFilter;
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+
+    return transactions.filter(transaction => {
+        const transactionDate = new Date(transaction.date);
+        return transactionDate >= startDate && transactionDate <= endDate;
+    });
+}
+
+function displayTransactions(transactions) {
+    // Logika untuk menampilkan transaksi ke dalam tabel atau daftar
+    console.log(transactions);
+}
+
+function updateBalance(transactions) {
+    // Logika untuk menghitung dan memperbarui saldo berdasarkan transaksi yang difilter
+    const balance = transactions.reduce((total, transaction) => total + transaction.amount, 0);
+    console.log(`Saldo saat ini: ${balance}`);
+}
+
 function toggleTheme() {
     const theme = document.body.getAttribute('data-theme');
     const newTheme = theme === 'dark' ? 'light' : 'dark';
