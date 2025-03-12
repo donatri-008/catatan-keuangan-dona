@@ -59,7 +59,7 @@ auth.onAuthStateChanged(user => {
             showAuthUI();
         }
         loading.style.display = 'none';
-    }, 1000);
+    }, 500);
 });
 
 function showAppContent() {
