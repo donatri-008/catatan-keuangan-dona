@@ -386,14 +386,18 @@ function editTransaction(id) {
                 currentEditId = id;
                 const transactionDate = new Date(transaction.date);
                 const formattedDate = transactionDate.toISOString().split('T')[0];
-                document.getElementById('formSection').style.display = 'block';
+                const formSection = document.getElementById('formSection');
+                formSection.style.display = 'block';
                 document.getElementById('transactionName').value = transaction.name;
                 document.getElementById('transactionAmount').value = transaction.amount;
                 document.getElementById('transactionDate').value = formattedDate;
                 document.getElementById('transactionCategory').value = transaction.category;
                 document.getElementById('transactionType').value = transaction.type;
                 document.getElementById('submitButton').textContent = '💾 Simpan Perubahan';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+                // Scroll ke form transaksi
+                formSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                
                 showNotification("✏️ Edit transaksi dilakukan", "success");
             }
         });
