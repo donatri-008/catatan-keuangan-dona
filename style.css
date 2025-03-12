@@ -312,8 +312,8 @@ button:hover {
   display: none;
   width: 100%;
   max-width: 400px;
-  margin: 20 auto;
-  padding: 20px;
+  margin: 5 auto;
+  padding: 10px;
   background: var(--card-bg);
 }
 
