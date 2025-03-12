@@ -64,7 +64,7 @@ body {
 .auth-container {
     display: none;
     max-width: 400px;
-    margin: 50px auto;
+    margin: 20px auto;
     padding: 30px;
     background: var(--card-bg);
     border-radius: var(--radius);
@@ -321,7 +321,7 @@ button:hover {
   display: none;
   width: 100%;
   max-width: 400px;
-  margin: 5 auto;
+  margin: 10px auto;
   padding: 10px;
   background: var(--card-bg);
 }
