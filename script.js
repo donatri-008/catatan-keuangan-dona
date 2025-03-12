@@ -117,12 +117,30 @@ async function handleLogin() {
 
 // Fungsi handle sign up
 async function handleSignUp() {
-  const username = document.getElementById('signupUsername').value;
-  const email = document.getElementById('signupEmail').value;
-  const password = document.getElementById('signupPassword').value;
+  const username = document.getElementById('signupUsername').value.trim();
+  const email = document.getElementById('signupEmail').value.trim();
+  const password = document.getElementById('signupPassword').value.trim();
   const errorElement = document.getElementById('signupError');
+  const signupButton = document.querySelector('#signupCard button[type="submit"]');
 
   try {
+    // Validasi client-side
+    if (username.length < 3) {
+      throw new Error('Username harus minimal 3 karakter');
+    }
+    
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      throw new Error('Format email tidak valid');
+    }
+
+    if (password.length < 6) {
+      throw new Error('Password harus minimal 6 karakter');
+    }
+
+    // Tampilkan loading state
+    signupButton.disabled = true;
+    signupButton.innerHTML = '⌛ Mendaftarkan...';
+
     // Membuat user baru
     const userCredential = await auth.createUserWithEmailAndPassword(email, password);
     
@@ -130,48 +148,109 @@ async function handleSignUp() {
     await db.collection('users').doc(userCredential.user.uid).set({
       username: username,
       email: email,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      lastLogin: null
     });
 
-    // Logout user setelah berhasil sign up
-    await auth.signOut();
+    // Auto-login setelah berhasil sign up
+    showNotification("🎉 Pendaftaran berhasil! Anda akan diarahkan...");
     
-    showNotification("🎉 Pendaftaran berhasil! Silakan login dengan akun Anda.");
-    showLogin();
+    // Redirect ke dashboard setelah 2 detik
+    setTimeout(() => {
+      window.location.reload(); // Refresh untuk update UI login
+    }, 2000);
+
   } catch (error) {
-    errorElement.textContent = error.message;
+    // Handle error spesifik
+    let errorMessage = 'Terjadi kesalahan saat pendaftaran';
+    
+    switch (error.code) {
+      case 'auth/email-already-in-use':
+        errorMessage = 'Email sudah terdaftar';
+        break;
+      case 'auth/weak-password':
+        errorMessage = 'Password terlalu lemah';
+        break;
+      case 'permission-denied':
+        errorMessage = 'Akses database ditolak. Coba lagi nanti';
+        break;
+      default:
+        errorMessage = error.message || errorMessage;
+    }
+    
+    errorElement.textContent = errorMessage;
+    errorElement.style.display = 'block';
+    
+    // Animasi shake untuk error
+    errorElement.parentElement.classList.add('shake');
+    setTimeout(() => {
+      errorElement.parentElement.classList.remove('shake');
+    }, 500);
+
+  } finally {
+    // Reset UI state
+    signupButton.disabled = false;
+    signupButton.innerHTML = 'Daftar';
   }
 }
 
-// ================= AUTHENTICATION =================
+// ================= AUTH UI YANG DIPERBAIKI =================
 function showAuthUI() {
   const authContainer = document.getElementById('authContainer');
   authContainer.innerHTML = `
     <div class="auth-card active" id="loginCard">
       <h2>🔐 Login</h2>
-      <form class="auth-form" onsubmit="return false;">
+      <form class="auth-form" onsubmit="return handleLogin(event)">
         <input type="email" id="loginEmail" placeholder="Email" required>
         <input type="password" id="loginPassword" placeholder="Password" required>
-        <button type="submit" onclick="handleLogin()">Masuk</button>
-        <button type="button" onclick="handleGoogleAuth()">Masuk dengan Google</button>
-        <button type="button" onclick="showResetPassword()">Lupa Password?</button>
-        <div class="auth-switch">Belum punya akun? <a href="#" onclick="showSignUp()">Daftar di sini</a></div>
+        <div class="form-footer">
+          <button type="submit" class="auth-btn primary">
+            <span class="btn-text">Masuk</span>
+            <span class="btn-loader">⌛</span>
+          </button>
+          <div class="auth-providers">
+            <button type="button" class="google-btn" onclick="handleGoogleAuth()">
+              <img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="Google">
+              Google
+            </button>
+          </div>
+          <button type="button" class="text-link" onclick="showResetPassword()">Lupa Password?</button>
+          <div class="auth-switch">
+            Belum punya akun? 
+            <a href="#" class="text-link" onclick="showSignUp()">Daftar di sini</a>
+          </div>
+        </div>
         <div id="authError" class="auth-error"></div>
       </form>
     </div>
 
     <div class="auth-card" id="signupCard">
       <h2>📝 Daftar Akun Baru</h2>
-      <form class="auth-form" onsubmit="return false;">
-        <input type="text" id="signupUsername" placeholder="Username" required>
+      <form class="auth-form" onsubmit="return handleSignUp(event)">
+        <input type="text" id="signupUsername" placeholder="Username" minlength="3" required>
         <input type="email" id="signupEmail" placeholder="Email" required>
-        <input type="password" id="signupPassword" placeholder="Password" required>
-        <button type="submit" onclick="handleSignUp()">Daftar</button>
-        <button type="button" onclick="showLogin()">Kembali ke Login</button>
+        <input type="password" id="signupPassword" placeholder="Password" minlength="6" required>
+        <div class="form-footer">
+          <button type="submit" class="auth-btn primary">
+            <span class="btn-text">Daftar</span>
+            <span class="btn-loader">⌛</span>
+          </button>
+          <button type="button" class="text-link" onclick="showLogin()">
+            ← Kembali ke Login
+          </button>
+        </div>
         <div id="signupError" class="auth-error"></div>
       </form>
     </div>
   `;
+
+  // Tambahkan event listener untuk clear error
+  authContainer.querySelectorAll('input').forEach(input => {
+    input.addEventListener('input', () => {
+      document.getElementById('signupError').style.display = 'none';
+      document.getElementById('authError').style.display = 'none';
+    });
+  });
 }
 
 async function handleAuth() {
