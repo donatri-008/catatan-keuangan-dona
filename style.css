@@ -488,9 +488,8 @@ button:hover {
     }
 
     .balance-amount {
-        font-size: 16px;
+        font-size: 14px;
         margin: 10px 0;
-        word-break: break-word;
     }
 
     .chart-card h2 {
