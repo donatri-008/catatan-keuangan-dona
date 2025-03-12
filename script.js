@@ -324,7 +324,12 @@ function renderTransactions() {
     const container = document.getElementById('transactions');
     container.innerHTML = '';
 
-    transactions.forEach(transaction => {
+    const filteredTransactions = currentFilter ? transactions.filter(t => 
+        new Date(t.date) >= new Date(currentFilter.start) && 
+        new Date(t.date) <= new Date(currentFilter.end)
+    ) : transactions;
+
+    filteredTransactions.forEach(transaction => {
         const div = document.createElement('div');
         div.className = 'transaction-item';
         div.innerHTML = `
@@ -345,6 +350,7 @@ function renderTransactions() {
         `;
         container.appendChild(div);
     });
+}
 
     // Tambahkan event listener untuk tombol Edit dan Hapus dengan event delegation
     container.addEventListener("click", function(event) {
