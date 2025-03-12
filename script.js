@@ -324,8 +324,6 @@ function showAuthUI() {
         </div>
         <div id="authError" class="auth-error"></div>
       </form>
-      <button onclick="linkGoogleToEmailPassword()">Tautkan ke Google</button>
-      <button onclick="linkEmailPasswordToGoogle()">Tautkan ke Email & Password</button>
     </div>
 
     <div class="auth-card" id="signupCard">
