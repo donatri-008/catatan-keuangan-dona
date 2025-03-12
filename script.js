@@ -448,21 +448,42 @@ function cancelEdit() {
 function filterTransactions() {
     const start = document.getElementById('startDate').value;
     const end = document.getElementById('endDate').value;
-    
+    let totalBalance = 0;
+
     if (start && end) {
         currentFilter = { start, end };
     } else {
         currentFilter = null;
     }
-    
-    updateAll();
+
+    document.querySelectorAll('.transaction').forEach(transaction => {
+        const date = transaction.getAttribute('data-date');
+        const amount = parseFloat(transaction.getAttribute('data-amount'));
+        const type = transaction.getAttribute('data-type');
+
+        if (!currentFilter || (date >= start && date <= end)) {
+            transaction.style.display = 'table-row';
+            totalBalance += amount;
+        } else {
+            transaction.style.display = 'none';
+        }
+    });
+
+    document.getElementById('saldo').textContent = `Saldo: Rp${totalBalance.toLocaleString('id-ID')}`;
 }
 
 function clearFilter() {
     document.getElementById('startDate').value = '';
     document.getElementById('endDate').value = '';
     currentFilter = null;
-    updateAll();
+    
+    let totalBalance = 0;
+    document.querySelectorAll('.transaction').forEach(transaction => {
+        transaction.style.display = 'table-row';
+        totalBalance += parseFloat(transaction.getAttribute('data-amount'));
+    });
+
+    document.getElementById('saldo').textContent = `Saldo: Rp${totalBalance.toLocaleString('id-ID')}`;
 }
 
 function toggleTheme() {
