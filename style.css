@@ -312,7 +312,6 @@ button:hover {
   display: none;
   max-width: 400px;
   margin: 0 auto;
-  padding: 30px;
   background: var(--card-bg);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
