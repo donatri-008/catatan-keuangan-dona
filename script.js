@@ -124,7 +124,6 @@ async function handleSignUp() {
   const signupButton = document.querySelector('#signupCard button[type="submit"]');
 
   try {
-    // Validasi client-side
     if (username.length < 3) {
       throw new Error('Username harus minimal 3 karakter');
     }
@@ -137,14 +136,11 @@ async function handleSignUp() {
       throw new Error('Password harus minimal 6 karakter');
     }
 
-    // Tampilkan loading state
     signupButton.disabled = true;
     signupButton.innerHTML = '⌛ Mendaftarkan...';
 
-    // Membuat user baru
     const userCredential = await auth.createUserWithEmailAndPassword(email, password);
     
-    // Menyimpan data tambahan user ke Firestore
     await db.collection('users').doc(userCredential.user.uid).set({
       username: username,
       email: email,
@@ -152,23 +148,15 @@ async function handleSignUp() {
       lastLogin: null
     });
 
-    // Auto-login setelah berhasil sign up
     showNotification("🎉 Pendaftaran berhasil! Silakan login dengan akun Anda.");
-    
-    setTimeout(async () => {
-      await auth.signOut();
-      showLogin();
 
-      // Clear form
-      document.getElementById('signupUsername').value = '';
-      document.getElementById('signupEmail').value = '';
-      document.getElementById('signupPassword').value = '';
+    setTimeout(() => {
+      showLogin(); // Langsung menuju halaman login
     }, 2000);
 
   } catch (error) {
-    // Handle error spesifik
     let errorMessage = 'Terjadi kesalahan saat pendaftaran';
-    
+
     switch (error.code) {
       case 'auth/email-already-in-use':
         errorMessage = 'Email sudah terdaftar';
@@ -185,15 +173,12 @@ async function handleSignUp() {
     
     errorElement.textContent = errorMessage;
     errorElement.style.display = 'block';
-    
-    // Animasi shake untuk error
     errorElement.parentElement.classList.add('shake');
     setTimeout(() => {
       errorElement.parentElement.classList.remove('shake');
     }, 500);
 
   } finally {
-    // Reset UI state
     signupButton.disabled = false;
     signupButton.innerHTML = 'Daftar';
   }
@@ -355,7 +340,6 @@ function initChart() {
 
 async function setupRealTimeListener() {
     try {
-        // Hentikan listener sebelumnya jika ada
         if (typeof unsubscribeTransactions === "function") {
             unsubscribeTransactions();
         }
@@ -364,23 +348,25 @@ async function setupRealTimeListener() {
             .doc(auth.currentUser.uid)
             .collection('transactions')
             .orderBy('date', 'desc')
-            .onSnapshot({
-                includeMetadataChanges: false // Nonaktifkan trigger metadata
-            }, (snapshot) => {
-                // Proses data hanya jika berasal dari server (bukan cache)
-                if (!snapshot.metadata.fromCache) {
-                    transactions = snapshot.docs.map(doc => ({
-                        id: doc.id,
-                        ...doc.data(),
-                        date: doc.data().date.toDate() // Konversi Timestamp ke Date
-                    }));
-                    console.log("Data transaksi diperbarui:", transactions);
+            .onSnapshot(snapshot => {
+                if (snapshot.empty) {
+                    console.log("Belum ada transaksi untuk pengguna ini.");
+                    transactions = [];
                     updateAll();
+                    return;
                 }
-            }, (error) => {
+
+                transactions = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data(),
+                    date: doc.data().date.toDate()
+                }));
+                console.log("Data transaksi diperbarui:", transactions);
+                updateAll();
+            }, error => {
                 console.error("Error listener:", error);
                 showNotification("Gagal memuat data realtime", "error");
-                transactions = []; // Reset data
+                transactions = [];
                 updateAll();
             });
 
