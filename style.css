@@ -299,7 +299,7 @@ button:hover {
 
 .auth-switch {
   text-align: center;
-  margin-top: 15px;
+  margin-top: 12px;
   font-size: 0.9em;
 }
 
@@ -314,8 +314,9 @@ button:hover {
 }
 
 .auth-card h2 {
-  margin-bottom: 10px;
-  text-align: center;
+  font-size: 1.5em;
+  margin-bottom: 15px;
+  color: var(--primary);
 }
 
 .auth-card {
@@ -325,6 +326,7 @@ button:hover {
   margin: 10px auto;
   padding: 10px;
   background: var(--card-bg);
+  text-align: center;
 }
 
 .auth-card.active {
@@ -420,16 +422,18 @@ button:hover {
 }
 
 .auth-form input {
-    padding: 12px;
-    border: 2px solid var(--secondary);
-    border-radius: 8px;
-    font-size: 16px;
+  padding: 12px;
+  border: 2px solid var(--secondary);
+  border-radius: 8px;
+  font-size: 16px;
+  background: var(--card-bg);
+  color: var(--text);
 }
 
 .auth-error {
-    color: #e74c3c;
-    text-align: center;
-    font-size: 0.9em;
+  color: #e74c3c;
+  font-size: 0.9em;
+  margin-top: 10px;
 }
 
 .logout-btn {
