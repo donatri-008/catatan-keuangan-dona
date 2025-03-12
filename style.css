@@ -479,6 +479,7 @@ button:hover {
 
     .dashboard {
         gap: 10px;
+        grid-template-columns: 1fr 1fr;
         margin-bottom: 15px;
     }
 
@@ -487,8 +488,9 @@ button:hover {
     }
 
     .balance-amount {
-        font-size: 2em;
+        font-size: 1.8em;
         margin: 10px 0;
+        word-break: break-word;
     }
 
     .chart-card h2 {
