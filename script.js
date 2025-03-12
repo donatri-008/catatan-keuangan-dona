@@ -252,12 +252,14 @@ async function saveTransaction(transaction) {
                 .doc(currentEditId)
                 .update(transactionData);
             currentEditId = null; // Reset ID edit
+            showNotification("✏️ Transaksi berhasil diperbarui!", "success"); // Notifikasi setelah berhasil update
         } else {
             // Tambah dokumen baru
             await db.collection('users')
                 .doc(auth.currentUser.uid)
                 .collection('transactions')
                 .add(transactionData);
+            showNotification("✅ Transaksi berhasil ditambahkan!", "success"); // Notifikasi setelah berhasil tambah
         }
     } catch (error) {
         showNotification("❌ Error: " + error.message, "error");
@@ -452,7 +454,7 @@ function toggleTheme() {
 document.getElementById('transactionForm').addEventListener('submit', async e => {
     e.preventDefault();
 
-      // Validasi input
+    // Validasi input
     const amount = parseFloat(document.getElementById('transactionAmount').value);
     if (isNaN(amount) || amount <= 0) {
         Swal.fire({
@@ -473,7 +475,7 @@ document.getElementById('transactionForm').addEventListener('submit', async e =>
     };
 
     await saveTransaction(transaction);
-    cancelEdit();
+    cancelEdit(); 
 
     if (currentEditId) {
         showNotification("Transaksi berhasil diperbarui!");
