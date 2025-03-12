@@ -16,7 +16,34 @@
         </div>
     
         <!-- Auth Container -->
-        <div id="authContainer" class="auth-container"></div>
+        <div id="authContainer" class="auth-container">
+          <!-- Login Form (default) -->
+          <div class="auth-card active" id="loginCard">
+            <h2>🔐 Login</h2>
+            <form class="auth-form" onsubmit="return false;">
+              <input type="email" id="loginEmail" placeholder="Email" required>
+              <input type="password" id="loginPassword" placeholder="Password" required>
+              <button type="submit" onclick="handleLogin()">Masuk</button>
+              <button type="button" onclick="handleGoogleAuth()">Masuk dengan Google</button>
+              <button type="button" onclick="showResetPassword()">Lupa Password?</button>
+              <div class="auth-switch">Belum punya akun? <a href="#" onclick="showSignUp()">Daftar di sini</a></div>
+              <div id="authError" class="auth-error"></div>
+            </form>
+          </div>
+        
+          <!-- Sign Up Form -->
+          <div class="auth-card" id="signupCard">
+            <h2>📝 Daftar Akun Baru</h2>
+            <form class="auth-form" onsubmit="return false;">
+              <input type="text" id="signupUsername" placeholder="Username" required>
+              <input type="email" id="signupEmail" placeholder="Email" required>
+              <input type="password" id="signupPassword" placeholder="Password" required>
+              <button type="submit" onclick="handleSignUp()">Daftar</button>
+              <button type="button" onclick="showLogin()">Kembali ke Login</button>
+              <div id="signupError" class="auth-error"></div>
+            </form>
+          </div>
+        </div>
     
         <!-- Main App Container (tersembunyi sampai login) -->
         <div id="appContent" style="display: none;">
