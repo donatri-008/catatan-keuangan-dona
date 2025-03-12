@@ -62,44 +62,6 @@ auth.onAuthStateChanged(user => {
     }, 500);
 });
 
-// Fungsi untuk menautkan akun email/password dengan Google
-async function linkGoogleToEmailPassword() {
-    const user = auth.currentUser;
-    if (!user) return;
-
-    try {
-        const email = user.email;
-        const password = prompt("Buat password baru untuk login manual:");
-
-        if (!password) {
-            alert("Password tidak boleh kosong!");
-            return;
-        }
-
-        const credential = firebase.auth.EmailAuthProvider.credential(email, password);
-        await user.linkWithCredential(credential);
-        alert("Akun berhasil ditautkan! Sekarang bisa login manual juga.");
-    } catch (error) {
-        console.error("Error linking account:", error.message);
-        alert("Gagal menautkan akun: " + error.message);
-    }
-}
-
-// Fungsi untuk menautkan akun email/password dengan Google
-async function linkEmailPasswordToGoogle() {
-    const user = auth.currentUser;
-    if (!user) return;
-
-    const provider = new firebase.auth.GoogleAuthProvider();
-    try {
-        await user.linkWithPopup(provider);
-        alert("Akun berhasil ditautkan ke Google!");
-    } catch (error) {
-        console.error("Error linking:", error.message);
-        alert("Gagal menautkan akun: " + error.message);
-    }
-}
-
 function showAppContent() {
     const appContent = document.getElementById("appContent");
     const authContainer = document.getElementById("authContainer");
@@ -176,7 +138,7 @@ async function handleLogin(event) {
 
     // Redirect ke halaman utama setelah login
     setTimeout(() => {
-      window.location.reload(); 
+      window.location.reload();
     }, 1000);
 
   } catch (error) {
@@ -194,6 +156,9 @@ async function handleLogin(event) {
         break;
       case 'auth/invalid-email':
         errorMessage = 'Format email tidak valid.';
+        break;
+      case 'auth/account-exists-with-different-credential':
+        errorMessage = 'Akun ini sudah terdaftar dengan metode login lain. Coba login dengan Google.';
         break;
       default:
         errorMessage = error.message || errorMessage;
@@ -374,12 +339,41 @@ async function handleAuth() {
 }
 
 async function handleGoogleAuth() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    try {
-        await auth.signInWithPopup(provider);
-    } catch (error) {
-        document.getElementById('authError').textContent = error.message;
+  const provider = new firebase.auth.GoogleAuthProvider();
+  const authError = document.getElementById('authError');
+
+  try {
+    const googleCredential = await auth.signInWithPopup(provider);
+    const user = googleCredential.user;
+    console.log("Login dengan Google berhasil:", user);
+
+    // Cek apakah akun sudah memiliki metode login email/password
+    const methods = await auth.fetchSignInMethodsForEmail(user.email);
+
+    if (methods.includes('password')) {
+      showNotification("Akun ini sudah memiliki metode login email & password.");
+    } else {
+      // Jika akun belum ada metode email/password, buat dan tautkan
+      const password = prompt("Buat password baru untuk akun ini:");
+      if (password && password.length >= 6) {
+        const emailCredential = firebase.auth.EmailAuthProvider.credential(user.email, password);
+        await user.linkWithCredential(emailCredential);
+        showNotification("Akun Google berhasil ditautkan dengan email & password!");
+      }
     }
+
+    setTimeout(() => window.location.reload(), 1000);
+
+  } catch (error) {
+    let errorMessage = 'Terjadi kesalahan saat login dengan Google';
+    
+    if (error.code === 'auth/account-exists-with-different-credential') {
+      errorMessage = 'Akun ini sudah terdaftar dengan metode login lain. Silakan gunakan metode tersebut.';
+    }
+
+    authError.textContent = errorMessage;
+    authError.style.display = 'block';
+  }
 }
 
 function showResetPassword() {
