@@ -91,20 +91,84 @@ function showNotification(message, type = "success") {
     });
 }
 
+// Fungsi untuk toggle form
+function showLogin() {
+  document.getElementById('loginCard').classList.add('active');
+  document.getElementById('signupCard').classList.remove('active');
+}
+
+function showSignUp() {
+  document.getElementById('signupCard').classList.add('active');
+  document.getElementById('loginCard').classList.remove('active');
+}
+
+// Fungsi handle login
+async function handleLogin() {
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+  const authError = document.getElementById('authError');
+
+  try {
+    await auth.signInWithEmailAndPassword(email, password);
+  } catch (error) {
+    authError.textContent = error.message;
+  }
+}
+
+// Fungsi handle sign up
+async function handleSignUp() {
+  const username = document.getElementById('signupUsername').value;
+  const email = document.getElementById('signupEmail').value;
+  const password = document.getElementById('signupPassword').value;
+  const errorElement = document.getElementById('signupError');
+
+  try {
+    // Membuat user baru
+    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+    
+    // Menyimpan data tambahan user ke Firestore
+    await db.collection('users').doc(userCredential.user.uid).set({
+      username: username,
+      email: email,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    showNotification("🎉 Pendaftaran berhasil! Silakan login.");
+    showLogin();
+  } catch (error) {
+    errorElement.textContent = error.message;
+  }
+}
+
 // ================= AUTHENTICATION =================
 function showAuthUI() {
-    const authContainer = document.getElementById('authContainer');
-    authContainer.innerHTML = `
-        <h2>🔐 Silakan Login/Daftar</h2>
-        <form class="auth-form" onsubmit="return false;">
-            <input type="email" id="authEmail" placeholder="Email" required>
-            <input type="password" id="authPassword" placeholder="Password" required>
-            <button type="submit" onclick="handleAuth()">Masuk</button>
-            <button type="button" onclick="handleGoogleAuth()">Masuk dengan Google</button>
-            <button type="button" onclick="showResetPassword()">Lupa Password?</button>
-            <div id="authError" class="auth-error"></div>
-        </form>
-    `;
+  const authContainer = document.getElementById('authContainer');
+  authContainer.innerHTML = `
+    <div class="auth-card active" id="loginCard">
+      <h2>🔐 Login</h2>
+      <form class="auth-form" onsubmit="return false;">
+        <input type="email" id="loginEmail" placeholder="Email" required>
+        <input type="password" id="loginPassword" placeholder="Password" required>
+        <button type="submit" onclick="handleLogin()">Masuk</button>
+        <button type="button" onclick="handleGoogleAuth()">Masuk dengan Google</button>
+        <button type="button" onclick="showResetPassword()">Lupa Password?</button>
+        <div class="auth-switch">Belum punya akun? <a href="#" onclick="showSignUp()">Daftar di sini</a></div>
+        <div id="authError" class="auth-error"></div>
+      </form>
+    </div>
+
+    <div class="auth-card" id="signupCard">
+      <h2>📝 Daftar Akun Baru</h2>
+      <form class="auth-form" onsubmit="return false;">
+        <input type="text" id="signupUsername" placeholder="Username" required>
+        <input type="email" id="signupEmail" placeholder="Email" required>
+        <input type="password" id="signupPassword" placeholder="Password" required>
+        <button type="submit" onclick="handleSignUp()">Daftar</button>
+        <button type="button" onclick="showLogin()">Kembali ke Login</button>
+        <div id="signupError" class="auth-error"></div>
+      </form>
+    </div>
+  `;
 }
 
 async function handleAuth() {
