@@ -117,10 +117,6 @@ async function handleLogin() {
 
 // Fungsi handle sign up
 async function handleSignUp() {
-    const loading = document.getElementById('loading');
-  try {
-    loading.style.display = 'flex';
-    
   const username = document.getElementById('signupUsername').value;
   const email = document.getElementById('signupEmail').value;
   const password = document.getElementById('signupPassword').value;
@@ -144,8 +140,6 @@ async function handleSignUp() {
     showLogin();
   } catch (error) {
     errorElement.textContent = error.message;
-  } finally {
-    loading.style.display = 'none';
   }
 }
 
