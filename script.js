@@ -374,44 +374,58 @@ function getCategoryIcon(category) {
 
 function editTransaction(id) {
     const transaction = transactions.find(t => t.id === id);
-    
-    if (transaction) {
-        Swal.fire({
-            title: 'Edit Transaksi',
-            text: 'Apakah Anda ingin mengedit transaksi ini?',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Ya, Edit',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                currentEditId = id;
-                const transactionDate = new Date(transaction.date);
-                const formattedDate = transactionDate.toISOString().split('T')[0];
-                const formSection = document.getElementById('formSection');
-                const appContent = document.getElementById('appContent');
 
-                // Tampilkan #appContent dan formSection
-                appContent.style.display = 'block';
-                formSection.style.display = 'block';
-
-                // Isi form dengan data transaksi
-                document.getElementById('transactionName').value = transaction.name;
-                document.getElementById('transactionAmount').value = transaction.amount;
-                document.getElementById('transactionDate').value = formattedDate;
-                document.getElementById('transactionCategory').value = transaction.category;
-                document.getElementById('transactionType').value = transaction.type;
-                document.getElementById('submitButton').textContent = '💾 Simpan Perubahan';
-
-                // Scroll ke formSection setelah elemen ditampilkan
-                setTimeout(() => {
-                    formSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 100);
-            }
-        });
-    } else {
+    if (!transaction) {
+        console.error("Transaksi tidak ditemukan untuk ID:", id);
         showNotification("❌ Transaksi tidak ditemukan!", "error");
+        return;
     }
+
+    Swal.fire({
+        title: 'Edit Transaksi',
+        text: 'Apakah Anda ingin mengedit transaksi ini?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Edit',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        console.log("Hasil konfirmasi edit:", result.isConfirmed);
+
+        if (result.isConfirmed) {
+            currentEditId = id;
+            const transactionDate = new Date(transaction.date);
+            const formattedDate = transactionDate.toISOString().split('T')[0];
+
+            const formSection = document.getElementById('formSection');
+            const appContent = document.getElementById('appContent');
+
+            if (!formSection || !appContent) {
+                console.error("Elemen formSection atau appContent tidak ditemukan!");
+                return;
+            }
+
+            // Pastikan form ditampilkan
+            appContent.style.display = 'block';
+            formSection.style.display = 'block';
+
+            console.log("Menampilkan appContent:", appContent);
+            console.log("Menampilkan formSection:", formSection);
+
+            // Isi form dengan data transaksi
+            document.getElementById('transactionName').value = transaction.name;
+            document.getElementById('transactionAmount').value = transaction.amount;
+            document.getElementById('transactionDate').value = formattedDate;
+            document.getElementById('transactionCategory').value = transaction.category;
+            document.getElementById('transactionType').value = transaction.type;
+            document.getElementById('submitButton').textContent = '💾 Simpan Perubahan';
+
+            // Scroll ke formSection setelah elemen ditampilkan
+            setTimeout(() => {
+                formSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                console.log("Scrolling ke formSection...");
+            }, 300);
+        }
+    });
 }
 
 function cancelEdit() {
