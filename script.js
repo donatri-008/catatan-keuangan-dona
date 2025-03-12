@@ -203,14 +203,14 @@ function showAuthUI() {
       <form class="auth-form" onsubmit="return handleLogin(event)">
         <input type="email" id="loginEmail" placeholder="Email" required>
         <input type="password" id="loginPassword" placeholder="Password" required>
+        <button type="button" class="text-link" onclick="showResetPassword()">Lupa Password?</button>
         <div class="form-footer">
           <button type="submit" class="auth-btn primary">
             <span class="btn-text">Masuk</span>
             <span class="btn-loader">⌛</span>
           </button>
-          <button type="button" class="text-link" onclick="showResetPassword()">Lupa Password?</button>
           <div class="auth-providers">
-            <h2>Atau masuk menggunakan</h2>
+            <p>Atau masuk menggunakan</p>
             <button type="button" class="google-btn" onclick="handleGoogleAuth()">
               <img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="Google">
               Google
