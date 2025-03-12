@@ -194,53 +194,73 @@ function initChart() {
 
 async function setupRealTimeListener() {
     try {
+        // Hentikan listener sebelumnya jika ada
+        if (typeof unsubscribeTransactions === "function") {
+            unsubscribeTransactions();
+        }
+
         unsubscribeTransactions = db.collection('users')
             .doc(auth.currentUser.uid)
             .collection('transactions')
             .orderBy('date', 'desc')
-            .onSnapshot(snapshot => {
-                if (!snapshot.empty) {
+            .onSnapshot({
+                includeMetadataChanges: false // Nonaktifkan trigger metadata
+            }, (snapshot) => {
+                // Proses data hanya jika berasal dari server (bukan cache)
+                if (!snapshot.metadata.fromCache) {
                     transactions = snapshot.docs.map(doc => ({
                         id: doc.id,
                         ...doc.data(),
-                        date: doc.data().date.toDate()
+                        date: doc.data().date.toDate() // Konversi Timestamp ke Date
                     }));
-                    console.log("Transaksi berhasil dimuat:", transactions);
+                    console.log("Data transaksi diperbarui:", transactions);
                     updateAll();
-                } else {
-                    console.warn("Tidak ada transaksi ditemukan.");
                 }
-            }, error => {
-                console.error('Error listening to realtime updates:', error);
-                alert('Gagal memuat data transaksi');
+            }, (error) => {
+                console.error("Error listener:", error);
+                showNotification("Gagal memuat data realtime", "error");
+                transactions = []; // Reset data
+                updateAll();
             });
+
     } catch (error) {
-        console.error('Error setting up listener:', error);
+        console.error("Gagal setup listener:", error);
+        showNotification("Koneksi database terganggu", "error");
     }
 }
 
 async function saveTransaction(transaction) {
     try {
+        // Konversi tanggal ke Timestamp Firestore
+        const transactionDate = new Date(transaction.date);
+        const firestoreDate = firebase.firestore.Timestamp.fromDate(transactionDate);
+
         const transactionData = {
             ...transaction,
             amount: Number(transaction.amount),
-            date: firebase.firestore.Timestamp.fromDate(new Date(transaction.date))
+            date: firestoreDate // Gunakan tanggal yang sudah dikonversi
         };
 
-        if (transaction.id) {
+        // Hapus ID dari data yang akan disimpan
+        delete transactionData.id;
+
+        if (currentEditId) {
+            // Update dokumen yang ada
             await db.collection('users')
                 .doc(auth.currentUser.uid)
                 .collection('transactions')
-                .doc(transaction.id)
+                .doc(currentEditId)
                 .update(transactionData);
+            currentEditId = null; // Reset ID edit
         } else {
+            // Tambah dokumen baru
             await db.collection('users')
                 .doc(auth.currentUser.uid)
                 .collection('transactions')
                 .add(transactionData);
         }
     } catch (error) {
-        alert('Error menyimpan transaksi: ' + error.message);
+        showNotification("❌ Error: " + error.message, "error");
     }
 }
 
@@ -252,13 +272,19 @@ async function deleteTransaction(id) {
         showCancelButton: true,
         confirmButtonText: "Ya, hapus!",
         cancelButtonText: "Batal"
-    }).then((result) => {
+    }).then(async (result) => {
         if (result.isConfirmed) {
-            const index = transactions.findIndex(t => t.id === id);
-            if (index !== -1) {
-                transactions.splice(index, 1);
-                renderTransactions();
+            try {
+                // Hapus dari Firestore
+                await db.collection('users')
+                    .doc(auth.currentUser.uid)
+                    .collection('transactions')
+                    .doc(id)
+                    .delete();
+                
                 showNotification("🗑️ Transaksi berhasil dihapus!", "success");
+            } catch (error) {
+                showNotification("❌ Gagal menghapus transaksi: " + error.message, "error");
             }
         }
     });
@@ -350,9 +376,11 @@ function editTransaction(id) {
 
     if (transaction) {
         currentEditId = id;
+        const transactionDate = new Date(transaction.date);
+        const formattedDate = transactionDate.toISOString().split('T')[0];
         document.getElementById('transactionName').value = transaction.name;
         document.getElementById('transactionAmount').value = transaction.amount;
-        document.getElementById('transactionDate').value = transaction.date.toISOString().split('T')[0];
+        document.getElementById('transactionDate').value = formattedDate;
         document.getElementById('transactionCategory').value = transaction.category;
         document.getElementById('transactionType').value = transaction.type;
         document.getElementById('submitButton').textContent = '💾 Simpan Perubahan';
