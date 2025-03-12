@@ -247,7 +247,7 @@ function showAuthUI() {
             <span class="btn-text">Daftar</span>
             <span class="btn-loader">⌛</span>
           </button>
-          <button type="button" class="text-link" onclick="showLogin()">
+          <button type="button" class="textlink" onclick="showLogin()">
             ← Kembali ke Login
           </button>
         </div>
