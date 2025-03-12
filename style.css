@@ -83,8 +83,17 @@ body {
     display: block;
 }
 
+#formSection {
+    padding: 20px;
+    min-height: 300px;
+}
+
 .hidden {
     display: none;
+}
+
+.parent-container {
+    overflow: visible;
 }
 
 .swal2-confirm {
